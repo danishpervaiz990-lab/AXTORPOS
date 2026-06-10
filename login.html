@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AXTOR POS Cloud - Login</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{min-height:100vh;background:#f4f7f6;display:flex;align-items:center;justify-content:center;color:#1f2937}
+    .login-box{width:420px;background:#fff;padding:35px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+    .logo{text-align:center;font-size:34px;font-weight:800;color:#0b1f33;margin-bottom:10px}
+    .logo span{color:#0f9f6e}
+    .sub{text-align:center;color:#6b7280;margin-bottom:28px}
+    label{font-size:14px;font-weight:700;color:#374151;margin-bottom:7px;display:block}
+    input{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:11px;margin-bottom:16px;font-size:15px}
+    input:focus{outline:none;border-color:#0f9f6e}
+    button{width:100%;padding:14px;border:none;border-radius:11px;background:#0f9f6e;color:#fff;font-size:16px;font-weight:800;cursor:pointer}
+    button:hover{background:#0b8159}
+    .hint{margin-top:18px;background:#f0fdf4;color:#166534;padding:12px;border-radius:10px;font-size:13px;text-align:center}
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <div class="logo">AXTOR<span>POS</span></div>
+    <p class="sub">Cloud POS system for sales, inventory and reports</p>
+
+    <form onsubmit="login(event)">
+      <label>Email / Username</label>
+      <input type="text" id="username" value="admin" required />
+
+      <label>Password</label>
+      <input type="password" id="password" value="1234" required />
+
+      <button type="submit">Login</button>
+    </form>
+
+    <div class="hint">Demo Login: admin / 1234</div>
+  </div>
+
+  <script>
+    function login(e){
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if(username === "admin" && password === "1234"){
+        localStorage.setItem("axtor_logged_in","yes");
+        window.location.href = "index.html";
+      }else{
+        alert("Wrong username or password");
+      }
+    }
+  </script>
+</body>
+</html>

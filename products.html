@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXTOR POS Cloud - Products</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--sidebar-bg:#1a2332;--sidebar-width:210px;--green:#2d7a3a;--green-light:#3a9e4a;--green-bright:#22c55e;--white:#fff;--bg:#f4f6f8;--border:#e2e8f0;--text:#1a202c;--muted:#64748b;--red:#ef4444;--orange:#f97316;--blue:#3b82f6;--font:'Inter',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);font-family:var(--font);font-size:14px;color:var(--text)}
+.sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);position:fixed;top:0;left:0;bottom:0;z-index:50;display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.logo-text{font-size:17px;font-weight:800;color:white}.logo-text span{color:var(--green-bright)}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px}
+.sidebar-nav{flex:1;padding:12px 10px}
+.nav-section{font-size:9px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1.5px;padding:14px 8px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;font-size:13px;color:rgba(255,255,255,.65);text-decoration:none;margin-bottom:1px}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}.nav-item.active{background:var(--green);color:#fff;font-weight:600}
+.nav-icon{font-size:15px;width:18px;text-align:center}
+.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,.08)}
+.app-main{margin-left:var(--sidebar-width);min-height:100vh}
+.topbar{height:56px;background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:40}
+.tb-search{flex:1;max-width:480px;position:relative}.tb-search input{width:100%;padding:9px 16px 9px 34px;border:1px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;background:#f8fafc;outline:none}
+.tb-search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.topbar-spacer{flex:1}.tb-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.company-btn{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px}.company-avatar{width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.company-name{font-size:13px;font-weight:600}.content{padding:24px}
+.page-section{display:none}.page-section.active{display:block}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.page-title{font-size:22px;font-weight:700}
+.header-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;border:none;text-decoration:none}
+.btn-outline{border:1px solid var(--border);background:#fff;color:var(--muted)}.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green-light)}
+.btn-red{background:#fef2f2;color:var(--red);border:1px solid #fecaca}.btn-blue{background:#eff6ff;color:var(--blue);border:1px solid #bfdbfe}
+.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px}
+.card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}.card-amount{font-size:24px;font-weight:800}
+.table-card{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.table-toolbar{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filter-input,.select-filter{padding:8px 12px;border:1px solid var(--border);border-radius:7px;font-family:var(--font);font-size:12px;outline:none;background:#fff}
+.filter-input{min-width:260px}.toolbar-right{margin-left:auto;display:flex;gap:6px}
+.table-wrap{overflow-x:auto}.sales-table{width:100%;border-collapse:collapse}
+.sales-table th{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:10px 16px;border-bottom:1px solid var(--border);text-align:left;background:#fafbfc;white-space:nowrap}
+.sales-table td{padding:12px 16px;font-size:13px;border-bottom:1px solid #f8fafc;white-space:nowrap}.sales-table tr:hover td{background:#fafbfc}
+.status-badge{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;display:inline-block}
+.in-badge{background:#f0fdf4;color:var(--green)}.low-badge{background:#fff7ed;color:var(--orange)}.out-badge{background:#fef2f2;color:var(--red)}.inactive-badge{background:#f8fafc;color:var(--muted);border:1px solid var(--border)}
+.action-icons{display:flex;gap:5px}.action-icon{width:28px;height:28px;border-radius:5px;border:1px solid var(--border);background:#fff;cursor:pointer}
+.form-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px;max-width:1050px}
+.form-title{font-size:16px;font-weight:800;margin-bottom:16px;color:var(--text);padding-bottom:12px;border-bottom:1px solid var(--border)}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.field.full{grid-column:span 3}.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;outline:none;background:#fff}
+.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green-bright)}
+.form-actions{display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--border);padding-top:16px}
+.detail-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f8fafc;font-size:13px}.detail-row span{color:var(--muted)}
+.stock-grid{display:grid;grid-template-columns:1fr 330px;gap:16px}.stock-summary{position:sticky;top:72px}
+.adjust-box{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;margin-bottom:14px}
+@media(max-width:1000px){.stock-grid{grid-template-columns:1fr}.adjust-box{grid-template-columns:1fr}}
+@media(max-width:900px){.sidebar{position:relative;width:100%;height:auto}.app-main{margin-left:0}.cards-grid,.form-grid{grid-template-columns:1fr}.field.full{grid-column:span 1}.company-name{display:none}}
+</style>
+</head>
+<body>
+<script>
+if(localStorage.getItem("axtor_logged_in") !== "yes"){window.location.href="login.html";}
+</script>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">AXTOR<span>POS</span></div>
+    <div class="logo-sub">CLOUD</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="index.html"><span class="nav-icon">⊞</span> Dashboard</a>
+
+    <div class="nav-section">Sales</div>
+    <a class="nav-item" href="sales.html"><span class="nav-icon">🛒</span> Sales</a>
+    <a class="nav-item" href="sales.html#new-sale"><span class="nav-icon">➕</span> New Sale</a>
+    <a class="nav-item" href="sales.html#saved-invoices"><span class="nav-icon">📄</span> Invoices</a>
+    <a class="nav-item" href="sales.html#returns"><span class="nav-icon">↩️</span> Returns</a>
+
+    <div class="nav-section">Customers</div>
+    <a class="nav-item" href="customers.html"><span class="nav-icon">👥</span> Customers</a>
+    <a class="nav-item" href="customers.html#add-customer"><span class="nav-icon">➕</span> Add Customer</a>
+
+    <div class="nav-section">Products</div>
+    <a class="nav-item active" href="products.html"><span class="nav-icon">🛍️</span> Products</a>
+    <a class="nav-item" href="products.html#add-product"><span class="nav-icon">📦</span> Add Product</a>
+    <a class="nav-item" href="products.html#stock-view"><span class="nav-icon">🏪</span> Stock View</a>
+
+    <div class="nav-section">System</div>
+    <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a class="nav-item" href="#" onclick="logout()"><span class="nav-icon">🚪</span> Logout</a>
+  </div>
+</aside>
+
+<main class="app-main">
+  <div class="topbar">
+    <div>☰</div>
+    <div class="tb-search"><span>🔍</span><input placeholder="Search products..."></div>
+    <div class="topbar-spacer"></div>
+    <div class="tb-icon">❓</div>
+    <div class="tb-icon">🔔</div>
+    <div class="company-btn"><div class="company-avatar">AX</div><div class="company-name">AXTOR Trading</div></div>
+  </div>
+
+  <div class="content">
+
+    <section id="listSection" class="page-section active">
+      <div class="page-header">
+        <div class="page-title">Products</div>
+        <div class="header-actions">
+          <button class="btn btn-outline" onclick="resetProducts()">Reset Demo</button>
+          <a class="btn btn-blue" href="#stock-view" onclick="showSection('stock')">Stock View</a>
+          <a class="btn btn-green" href="#add-product" onclick="showSection('add')">+ Add Product</a>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card"><div class="card-title">Total Products</div><div class="card-amount" id="totalProducts">0</div></div>
+        <div class="card"><div class="card-title">In Stock</div><div class="card-amount" id="inStock">0</div></div>
+        <div class="card"><div class="card-title">Low Stock</div><div class="card-amount" id="lowStock">0</div></div>
+        <div class="card"><div class="card-title">Stock Value</div><div class="card-amount" id="stockValue">QAR 0</div></div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <input class="filter-input" id="productSearch" placeholder="Search product, SKU, barcode..." onkeyup="renderProducts()">
+          <select class="select-filter" id="categoryFilter" onchange="renderProducts()">
+            <option value="">All Categories</option>
+            <option>Automotive Paint</option>
+            <option>Industrial Paint</option>
+            <option>Thinner</option>
+            <option>Primer</option>
+            <option>Clear Coat</option>
+            <option>Tools</option>
+            <option>Other</option>
+          </select>
+          <select class="select-filter" id="stockFilter" onchange="renderProducts()">
+            <option value="">All Stock</option>
+            <option value="in">In Stock</option>
+            <option value="low">Low Stock</option>
+            <option value="out">Out of Stock</option>
+          </select>
+          <div class="toolbar-right">
+            <button class="btn btn-outline" onclick="clearFilters()">Clear</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="sales-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Category</th>
+                <th>Barcode</th>
+                <th>Sale Price</th>
+                <th>Cost</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="formSection" class="page-section">
+      <div class="page-header">
+        <div class="page-title" id="formTitle">Add Product</div>
+        <div class="header-actions">
+          <a class="btn btn-outline" href="products.html" onclick="showSection('list')">Back to Products</a>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <form id="productForm">
+          <div class="form-title">Product Information</div>
+
+          <div class="form-grid">
+            <div class="field"><label>Product Name *</label><input id="name" required></div>
+            <div class="field"><label>SKU *</label><input id="sku" required></div>
+            <div class="field"><label>Barcode</label><input id="barcode"></div>
+
+            <div class="field">
+              <label>Category *</label>
+              <select id="category" required>
+                <option value="">Select Category</option>
+                <option>Automotive Paint</option>
+                <option>Industrial Paint</option>
+                <option>Thinner</option>
+                <option>Primer</option>
+                <option>Clear Coat</option>
+                <option>Tools</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="field"><label>Brand</label><input id="brandName"></div>
+
+            <div class="field">
+              <label>Unit</label>
+              <select id="unit">
+                <option>PCS</option>
+                <option>LTR</option>
+                <option>Gallon</option>
+                <option>KG</option>
+                <option>Box</option>
+              </select>
+            </div>
+
+            <div class="field full"><label>Description</label><textarea id="description"></textarea></div>
+          </div>
+
+          <div class="form-title">Price & Stock</div>
+
+          <div class="form-grid">
+            <div class="field"><label>Sale Price QAR *</label><input id="salePrice" type="number" min="0" step="0.01" required></div>
+            <div class="field"><label>Cost Price QAR *</label><input id="cost" type="number" min="0" step="0.01" required></div>
+            <div class="field"><label>Tax %</label><input id="tax" type="number" min="0" step="0.01" value="0"></div>
+
+            <div class="field"><label>Opening Stock *</label><input id="stock" type="number" min="0" step="1" value="0" required></div>
+            <div class="field"><label>Minimum Stock Alert</label><input id="minStock" type="number" min="0" step="1" value="5"></div>
+
+            <div class="field">
+              <label>Status</label>
+              <select id="status">
+                <option>Active</option>
+                <option>Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline" onclick="clearForm()">Clear</button>
+            <button type="submit" class="btn btn-green">Save Product</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="stockSection" class="page-section">
+      <div class="page-header">
+        <div class="page-title">Stock View</div>
+        <div class="header-actions">
+          <a class="btn btn-green" href="#add-product" onclick="showSection('add')">+ Add Product</a>
+          <a class="btn btn-outline" href="products.html" onclick="showSection('list')">Back</a>
+        </div>
+      </div>
+
+      <div class="stock-grid">
+        <div>
+          <div class="table-card">
+            <div class="table-toolbar">
+              <input class="filter-input" id="stockSearch" placeholder="Search stock item..." onkeyup="renderStock()">
+              <select class="select-filter" id="stockStatusFilter" onchange="renderStock()">
+                <option value="">All Stock</option>
+                <option value="in">In Stock</option>
+                <option value="low">Low Stock</option>
+                <option value="out">Out of Stock</option>
+              </select>
+            </div>
+
+            <div class="table-wrap">
+              <table class="sales-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Stock</th>
+                    <th>Min Alert</th>
+                    <th>Cost</th>
+                    <th>Stock Value</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="stockBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="table-card" style="margin-top:16px">
+            <div class="table-toolbar">
+              <strong>Stock Adjustment</strong>
+            </div>
+
+            <div style="padding:16px">
+              <div class="adjust-box">
+                <select class="select-filter" id="adjustProduct"></select>
+                <select class="select-filter" id="adjustType">
+                  <option value="add">Add Stock</option>
+                  <option value="remove">Remove Stock</option>
+                </select>
+                <input class="filter-input" id="adjustQty" type="number" min="1" placeholder="Qty">
+                <button class="btn btn-green" onclick="adjustStock()">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card stock-summary">
+          <div class="card-title">Stock Summary</div>
+          <div class="detail-row"><span>Total Products</span><strong id="stockTotalProducts">0</strong></div>
+          <div class="detail-row"><span>Total Qty</span><strong id="stockTotalQty">0</strong></div>
+          <div class="detail-row"><span>Total Value</span><strong id="stockTotalValue">QAR 0</strong></div>
+          <div class="detail-row"><span>Low Stock</span><strong id="stockLowCount">0</strong></div>
+          <div class="detail-row"><span>Out of Stock</span><strong id="stockOutCount">0</strong></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+const demoProducts=[
+{id:1,name:"2K Automotive Paint",sku:"AX-PNT-001",category:"Automotive Paint",barcode:"8901001001",salePrice:120,cost:85,stock:24,minStock:5,tax:0,brandName:"Starlux",unit:"LTR",description:"",status:"Active"},
+{id:2,name:"HS Clear Coat 1L",sku:"AX-CLR-001",category:"Clear Coat",barcode:"8901001002",salePrice:45,cost:30,stock:4,minStock:5,tax:0,brandName:"Diamond Paints",unit:"LTR",description:"",status:"Active"},
+{id:3,name:"NC Thinner 5L",sku:"AX-THN-001",category:"Thinner",barcode:"8901001003",salePrice:38,cost:25,stock:0,minStock:5,tax:0,brandName:"Cosmo Coat",unit:"LTR",description:"",status:"Active"},
+{id:4,name:"Epoxy Primer",sku:"AX-PRI-001",category:"Primer",barcode:"8901001004",salePrice:95,cost:68,stock:12,minStock:5,tax:0,brandName:"AXTOR",unit:"LTR",description:"",status:"Active"}
+];
+
+let editingId=null;
+
+function logout(){
+  localStorage.removeItem("axtor_logged_in");
+  window.location.href="login.html";
+}
+
+function money(v){
+  return "QAR " + Number(v || 0).toFixed(2);
+}
+
+function getProducts(){
+  let data=localStorage.getItem("axtor_products");
+  if(!data){
+    localStorage.setItem("axtor_products",JSON.stringify(demoProducts));
+    return demoProducts;
+  }
+  return JSON.parse(data);
+}
+
+function saveProducts(products){
+  localStorage.setItem("axtor_products",JSON.stringify(products));
+}
+
+function stockStatus(p){
+  if(p.status==="Inactive") return {text:"Inactive",cls:"inactive-badge",filter:"inactive"};
+  if(Number(p.stock)<=0) return {text:"Out of Stock",cls:"out-badge",filter:"out"};
+  if(Number(p.stock)<=Number(p.minStock)) return {text:"Low Stock",cls:"low-badge",filter:"low"};
+  return {text:"In Stock",cls:"in-badge",filter:"in"};
+}
+
+function updateStats(){
+  const products=getProducts();
+  const active=products.filter(p=>p.status!=="Inactive");
+  const value=active.reduce((a,p)=>a+(Number(p.cost||0)*Number(p.stock||0)),0);
+
+  document.getElementById("totalProducts").textContent=products.length;
+  document.getElementById("inStock").textContent=active.filter(p=>stockStatus(p).filter==="in").length;
+  document.getElementById("lowStock").textContent=active.filter(p=>stockStatus(p).filter==="low").length;
+  document.getElementById("stockValue").textContent=money(value);
+}
+
+function renderProducts(){
+  const q=document.getElementById("productSearch").value.toLowerCase();
+  const cat=document.getElementById("categoryFilter").value;
+  const sf=document.getElementById("stockFilter").value;
+
+  const products=getProducts().filter(p=>{
+    const text=(p.name+" "+p.sku+" "+p.barcode+" "+p.brandName).toLowerCase();
+    const ss=stockStatus(p).filter;
+    return text.includes(q) && (!cat || p.category===cat) && (!sf || ss===sf);
+  });
+
+  document.getElementById("productBody").innerHTML=products.map(p=>{
+    const ss=stockStatus(p);
+    return `
+    <tr>
+      <td><strong>${p.name}</strong><br><small style="color:var(--muted)">${p.brandName || "-"}</small></td>
+      <td>${p.sku}</td>
+      <td>${p.category}</td>
+      <td>${p.barcode || "N/A"}</td>
+      <td>${money(p.salePrice)}</td>
+      <td>${money(p.cost)}</td>
+      <td>${p.stock} ${p.unit || ""}</td>
+      <td><span class="status-badge ${ss.cls}">${ss.text}</span></td>
+      <td>
+        <div class="action-icons">
+          <button class="action-icon" onclick="editProduct(${p.id})">✏️</button>
+          <button class="action-icon" onclick="deleteProduct(${p.id})">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="9" style="text-align:center;color:var(--muted)">No products found</td></tr>`;
+
+  updateStats();
+}
+
+function renderStock(){
+  const q=(document.getElementById("stockSearch").value || "").toLowerCase();
+  const sf=document.getElementById("stockStatusFilter").value;
+
+  const products=getProducts().filter(p=>{
+    const ss=stockStatus(p).filter;
+    const text=(p.name+" "+p.sku+" "+p.category).toLowerCase();
+    return text.includes(q) && (!sf || ss===sf);
+  });
+
+  document.getElementById("stockBody").innerHTML=products.map(p=>{
+    const ss=stockStatus(p);
+    return `
+    <tr>
+      <td><strong>${p.name}</strong><br><small style="color:var(--muted)">SKU: ${p.sku}</small></td>
+      <td>${p.category}</td>
+      <td>${p.stock} ${p.unit || ""}</td>
+      <td>${p.minStock}</td>
+      <td>${money(p.cost)}</td>
+      <td>${money(Number(p.cost||0)*Number(p.stock||0))}</td>
+      <td><span class="status-badge ${ss.cls}">${ss.text}</span></td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="7" style="text-align:center;color:var(--muted)">No stock found</td></tr>`;
+
+  renderAdjustProducts();
+  updateStockSummary();
+}
+
+function updateStockSummary(){
+  const products=getProducts().filter(p=>p.status!=="Inactive");
+  const totalQty=products.reduce((a,p)=>a+Number(p.stock||0),0);
+  const totalValue=products.reduce((a,p)=>a+(Number(p.cost||0)*Number(p.stock||0)),0);
+
+  document.getElementById("stockTotalProducts").textContent=products.length;
+  document.getElementById("stockTotalQty").textContent=totalQty;
+  document.getElementById("stockTotalValue").textContent=money(totalValue);
+  document.getElementById("stockLowCount").textContent=products.filter(p=>stockStatus(p).filter==="low").length;
+  document.getElementById("stockOutCount").textContent=products.filter(p=>stockStatus(p).filter==="out").length;
+}
+
+function renderAdjustProducts(){
+  const products=getProducts();
+  document.getElementById("adjustProduct").innerHTML=products.map(p=>`<option value="${p.id}">${p.name} - ${p.sku}</option>`).join("");
+}
+
+function adjustStock(){
+  const id=document.getElementById("adjustProduct").value;
+  const type=document.getElementById("adjustType").value;
+  const qty=Number(document.getElementById("adjustQty").value || 0);
+
+  if(qty<=0){
+    alert("Enter valid quantity.");
+    return;
+  }
+
+  let products=getProducts();
+  products=products.map(p=>{
+    if(String(p.id)===String(id)){
+      if(type==="add") p.stock=Number(p.stock||0)+qty;
+      else p.stock=Math.max(0,Number(p.stock||0)-qty);
+    }
+    return p;
+  });
+
+  saveProducts(products);
+  document.getElementById("adjustQty").value="";
+  renderStock();
+  renderProducts();
+  alert("Stock updated.");
+}
+
+function showSection(section){
+  document.querySelectorAll(".page-section").forEach(s=>s.classList.remove("active"));
+
+  if(section==="add"){
+    editingId=null;
+    clearForm();
+    document.getElementById("formTitle").textContent="Add Product";
+    document.getElementById("formSection").classList.add("active");
+    location.hash="add-product";
+  }else if(section==="stock"){
+    document.getElementById("stockSection").classList.add("active");
+    renderStock();
+    location.hash="stock-view";
+  }else{
+    document.getElementById("listSection").classList.add("active");
+    renderProducts();
+    location.hash="";
+  }
+}
+
+function editProduct(id){
+  const p=getProducts().find(x=>String(x.id)===String(id));
+  if(!p) return;
+
+  editingId=id;
+  document.getElementById("formTitle").textContent="Edit Product";
+
+  ["name","sku","barcode","category","brandName","unit","description","salePrice","cost","tax","stock","minStock","status"].forEach(k=>{
+    document.getElementById(k).value=p[k] ?? "";
+  });
+
+  document.querySelectorAll(".page-section").forEach(s=>s.classList.remove("active"));
+  document.getElementById("formSection").classList.add("active");
+  location.hash="edit-product";
+}
+
+function deleteProduct(id){
+  if(!confirm("Delete this product?")) return;
+  saveProducts(getProducts().filter(p=>String(p.id)!==String(id)));
+  renderProducts();
+}
+
+function clearForm(){
+  document.getElementById("productForm").reset();
+  document.getElementById("tax").value=0;
+  document.getElementById("stock").value=0;
+  document.getElementById("minStock").value=5;
+  document.getElementById("status").value="Active";
+}
+
+document.getElementById("productForm").addEventListener("submit",function(e){
+  e.preventDefault();
+
+  let products=getProducts();
+
+  const product={
+    id: editingId ? Number(editingId) : Date.now(),
+    name:name.value.trim(),
+    sku:sku.value.trim(),
+    barcode:barcode.value.trim() || "N/A",
+    category:category.value,
+    brandName:brandName.value.trim(),
+    unit:unit.value,
+    description:description.value.trim(),
+    salePrice:Number(salePrice.value||0),
+    cost:Number(cost.value||0),
+    tax:Number(tax.value||0),
+    stock:Number(stock.value||0),
+    minStock:Number(minStock.value||0),
+    status:status.value
+  };
+
+  const duplicate=products.some(p=>p.sku.toLowerCase()===product.sku.toLowerCase() && String(p.id)!==String(product.id));
+  if(duplicate){
+    alert("This SKU already exists.");
+    return;
+  }
+
+  if(editingId){
+    products=products.map(p=>String(p.id)===String(editingId)?product:p);
+  }else{
+    products.push(product);
+  }
+
+  saveProducts(products);
+  alert("Product saved successfully.");
+  editingId=null;
+  showSection("list");
+});
+
+function clearFilters(){
+  document.getElementById("productSearch").value="";
+  document.getElementById("categoryFilter").value="";
+  document.getElementById("stockFilter").value="";
+  renderProducts();
+}
+
+function resetProducts(){
+  if(confirm("Reset demo products?")){
+    saveProducts(demoProducts);
+    renderProducts();
+  }
+}
+
+window.addEventListener("hashchange",route);
+
+function route(){
+  const h=location.hash.replace("#","");
+  if(h==="add-product") showSection("add");
+  else if(h==="stock-view") showSection("stock");
+  else showSection("list");
+}
+
+route();
+renderProducts();
+</script>
+</body>
+</html>

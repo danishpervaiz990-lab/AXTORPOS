@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXTOR POS Cloud - Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--sidebar-bg:#1a2332;--sidebar-width:210px;--green:#2d7a3a;--green-light:#3a9e4a;--green-bright:#22c55e;--white:#fff;--bg:#f4f6f8;--border:#e2e8f0;--text:#1a202c;--muted:#64748b;--red:#ef4444;--orange:#f97316;--blue:#3b82f6;--font:'Inter',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);font-family:var(--font);font-size:14px;color:var(--text)}
+.sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);position:fixed;top:0;left:0;bottom:0;z-index:50;display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.logo-text{font-size:17px;font-weight:800;color:white}.logo-text span{color:var(--green-bright)}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px}
+.sidebar-nav{flex:1;padding:12px 10px}.nav-section{font-size:9px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1.5px;padding:14px 8px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;font-size:13px;color:rgba(255,255,255,.65);text-decoration:none;margin-bottom:1px}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}.nav-item.active{background:var(--green);color:#fff;font-weight:600}
+.nav-icon{font-size:15px;width:18px;text-align:center}.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,.08)}
+.app-main{margin-left:var(--sidebar-width);min-height:100vh}
+.topbar{height:56px;background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:40}
+.tb-search{flex:1;max-width:480px;position:relative}.tb-search input{width:100%;padding:9px 16px 9px 34px;border:1px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;background:#f8fafc;outline:none}
+.tb-search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.topbar-spacer{flex:1}.tb-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.company-btn{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px}.company-avatar{width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.company-name{font-size:13px;font-weight:600}.content{padding:24px}
+.page-section{display:none}.page-section.active{display:block}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.page-title{font-size:22px;font-weight:700}
+.header-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;border:none;text-decoration:none}
+.btn-outline{border:1px solid var(--border);background:#fff;color:var(--muted)}.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green-light)}
+.btn-red{background:#fef2f2;color:var(--red);border:1px solid #fecaca}.btn-blue{background:#eff6ff;color:var(--blue);border:1px solid #bfdbfe}
+.settings-layout{display:grid;grid-template-columns:250px 1fr;gap:16px}
+.settings-menu{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;height:max-content;position:sticky;top:72px}
+.set-tab{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:600;font-size:13px;margin-bottom:3px}
+.set-tab:hover{background:#f8fafc;color:var(--text)}.set-tab.active{background:#f0fdf4;color:var(--green)}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px}
+.card-title{font-size:16px;font-weight:800;margin-bottom:16px;color:var(--text);padding-bottom:12px;border-bottom:1px solid var(--border)}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:18px}
+.form-grid.three{grid-template-columns:repeat(3,1fr)}
+.field.full{grid-column:span 2}.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;outline:none;background:#fff}
+.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green-bright)}
+.form-actions{display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--border);padding-top:16px}
+.table-card{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden}.table-toolbar{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.table-wrap{overflow-x:auto}.sales-table{width:100%;border-collapse:collapse}
+.sales-table th{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:10px 16px;border-bottom:1px solid var(--border);text-align:left;background:#fafbfc;white-space:nowrap}
+.sales-table td{padding:12px 16px;font-size:13px;border-bottom:1px solid #f8fafc;white-space:nowrap}.sales-table tr:hover td{background:#fafbfc}
+.status-badge{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;display:inline-block}
+.active-badge{background:#f0fdf4;color:var(--green)}.inactive-badge{background:#f8fafc;color:var(--muted);border:1px solid var(--border)}
+.role-badge{background:#eff6ff;color:var(--blue)}
+.action-icons{display:flex;gap:5px}.action-icon{width:28px;height:28px;border-radius:5px;border:1px solid var(--border);background:#fff;cursor:pointer}
+.pref-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f8fafc}
+.pref-title{font-weight:700}.pref-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.switch{position:relative;width:42px;height:24px}.switch input{display:none}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#cbd5e1;border-radius:20px;transition:.2s}.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;top:3px;background:white;border-radius:50%;transition:.2s}
+.switch input:checked + .slider{background:var(--green)}.switch input:checked + .slider:before{transform:translateX(18px)}
+.security-box{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.alert{padding:12px 14px;border-radius:9px;font-size:13px;margin-bottom:14px;display:none}
+.alert.success{background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0;display:block}
+.alert.error{background:#fef2f2;color:var(--red);border:1px solid #fecaca;display:block}
+@media(max-width:1000px){.settings-layout{grid-template-columns:1fr}.settings-menu{position:relative;top:0}.security-box{grid-template-columns:1fr}}
+@media(max-width:900px){.sidebar{position:relative;width:100%;height:auto}.app-main{margin-left:0}.form-grid,.form-grid.three{grid-template-columns:1fr}.field.full{grid-column:span 1}.company-name{display:none}}
+</style>
+</head>
+<body>
+<script>
+if(localStorage.getItem("axtor_logged_in") !== "yes"){window.location.href="login.html";}
+</script>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">AXTOR<span>POS</span></div>
+    <div class="logo-sub">CLOUD</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="index.html"><span class="nav-icon">⊞</span> Dashboard</a>
+
+    <div class="nav-section">Sales</div>
+    <a class="nav-item" href="sales.html"><span class="nav-icon">🛒</span> Sales</a>
+    <a class="nav-item" href="sales.html#new-sale"><span class="nav-icon">➕</span> New Sale</a>
+    <a class="nav-item" href="sales.html#saved-invoices"><span class="nav-icon">📄</span> Invoices</a>
+    <a class="nav-item" href="sales.html#returns"><span class="nav-icon">↩️</span> Returns</a>
+
+    <div class="nav-section">Customers</div>
+    <a class="nav-item" href="customers.html"><span class="nav-icon">👥</span> Customers</a>
+    <a class="nav-item" href="customers.html#add-customer"><span class="nav-icon">➕</span> Add Customer</a>
+
+    <div class="nav-section">Products</div>
+    <a class="nav-item" href="products.html"><span class="nav-icon">🛍️</span> Products</a>
+    <a class="nav-item" href="products.html#add-product"><span class="nav-icon">📦</span> Add Product</a>
+    <a class="nav-item" href="products.html#stock-view"><span class="nav-icon">🏪</span> Stock View</a>
+
+    <div class="nav-section">System</div>
+    <a class="nav-item active" href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a class="nav-item" href="#" onclick="logout()"><span class="nav-icon">🚪</span> Logout</a>
+  </div>
+</aside>
+
+<main class="app-main">
+  <div class="topbar">
+    <div>☰</div>
+    <div class="tb-search"><span>🔍</span><input placeholder="Search settings..."></div>
+    <div class="topbar-spacer"></div>
+    <div class="tb-icon">❓</div>
+    <div class="tb-icon">🔔</div>
+    <div class="company-btn"><div class="company-avatar">AX</div><div class="company-name" id="topCompanyName">AXTOR Trading</div></div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <div class="page-title">Settings</div>
+      <div class="header-actions">
+        <button class="btn btn-outline" onclick="resetSettings()">Reset Demo</button>
+      </div>
+    </div>
+
+    <div class="settings-layout">
+      <div class="settings-menu">
+        <div class="set-tab active" id="tabCompany" onclick="showTab('company')">🏢 Company Profile</div>
+        <div class="set-tab" id="tabUsers" onclick="showTab('users')">👤 Users</div>
+        <div class="set-tab" id="tabPreferences" onclick="showTab('preferences')">🎛️ Preferences</div>
+        <div class="set-tab" id="tabSecurity" onclick="showTab('security')">🔐 Security</div>
+      </div>
+
+      <div>
+        <section id="companySection" class="page-section active">
+          <div class="card">
+            <div class="card-title">Company Profile</div>
+            <div id="companyAlert"></div>
+
+            <form id="companyForm">
+              <div class="form-grid">
+                <div class="field"><label>Company Name *</label><input id="companyName" required></div>
+                <div class="field"><label>Business Type</label><input id="businessType"></div>
+                <div class="field"><label>CR Number</label><input id="crNumber"></div>
+                <div class="field"><label>Tax Number</label><input id="taxNumber"></div>
+                <div class="field"><label>Email</label><input id="companyEmail" type="email"></div>
+                <div class="field"><label>Phone</label><input id="companyPhone"></div>
+                <div class="field full"><label>Address</label><textarea id="companyAddress"></textarea></div>
+                <div class="field"><label>Currency</label><input id="currency" value="QAR"></div>
+                <div class="field"><label>Country</label><input id="country" value="Qatar"></div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-green">Save Company</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section id="usersSection" class="page-section">
+          <div class="card">
+            <div class="card-title" id="userFormTitle">Add User</div>
+
+            <form id="userForm">
+              <div class="form-grid three">
+                <div class="field"><label>Full Name *</label><input id="userName" required></div>
+                <div class="field"><label>Email / Login ID *</label><input id="userEmail" required></div>
+                <div class="field">
+                  <label>Role</label>
+                  <select id="userRole">
+                    <option>Admin</option>
+                    <option>Manager</option>
+                    <option>Cashier</option>
+                    <option>Salesman</option>
+                  </select>
+                </div>
+                <div class="field"><label>Password</label><input id="userPassword" type="password"></div>
+                <div class="field">
+                  <label>Status</label>
+                  <select id="userStatus">
+                    <option>Active</option>
+                    <option>Inactive</option>
+                  </select>
+                </div>
+                <div class="field"><label>Phone</label><input id="userPhone"></div>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn btn-outline" onclick="clearUserForm()">Clear</button>
+                <button type="submit" class="btn btn-green">Save User</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="table-card">
+            <div class="table-toolbar">
+              <strong>Users List</strong>
+            </div>
+            <div class="table-wrap">
+              <table class="sales-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Email / Login</th>
+                    <th>Role</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="preferencesSection" class="page-section">
+          <div class="card">
+            <div class="card-title">System Preferences</div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label>Default Sales Tax %</label>
+                <input id="defaultTax" type="number" value="0" step="0.01">
+              </div>
+
+              <div class="field">
+                <label>Invoice Prefix</label>
+                <input id="invoicePrefix" value="INV">
+              </div>
+
+              <div class="field">
+                <label>Date Format</label>
+                <select id="dateFormat">
+                  <option>DD/MM/YYYY</option>
+                  <option>MM/DD/YYYY</option>
+                  <option>YYYY-MM-DD</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Language</label>
+                <select id="language">
+                  <option>English</option>
+                  <option>Urdu / Hinglish</option>
+                  <option>Arabic</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Print Size</label>
+                <select id="printSize">
+                  <option>A4 Invoice</option>
+                  <option>Thermal 80mm</option>
+                  <option>Thermal 58mm</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Low Stock Alert Qty</label>
+                <input id="lowStockDefault" type="number" value="5">
+              </div>
+            </div>
+
+            <div class="pref-row">
+              <div><div class="pref-title">Auto Save Draft</div><div class="pref-sub">Automatically save invoices as draft while billing.</div></div>
+              <label class="switch"><input id="autoSaveDraft" type="checkbox" checked><span class="slider"></span></label>
+            </div>
+
+            <div class="pref-row">
+              <div><div class="pref-title">Show Stock Warning</div><div class="pref-sub">Warn cashier when stock is low or out.</div></div>
+              <label class="switch"><input id="showStockWarning" type="checkbox" checked><span class="slider"></span></label>
+            </div>
+
+            <div class="pref-row">
+              <div><div class="pref-title">Allow Negative Stock</div><div class="pref-sub">Allow sales even if product stock is zero.</div></div>
+              <label class="switch"><input id="allowNegativeStock" type="checkbox"><span class="slider"></span></label>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-green" onclick="savePreferences()">Save Preferences</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="securitySection" class="page-section">
+          <div class="security-box">
+            <div class="card">
+              <div class="card-title">Change Password</div>
+
+              <div id="passwordAlert"></div>
+
+              <div class="field" style="margin-bottom:14px">
+                <label>Current Password</label>
+                <input id="currentPassword" type="password">
+              </div>
+
+              <div class="field" style="margin-bottom:14px">
+                <label>New Password</label>
+                <input id="newPassword" type="password">
+              </div>
+
+              <div class="field" style="margin-bottom:14px">
+                <label>Confirm Password</label>
+                <input id="confirmPassword" type="password">
+              </div>
+
+              <button class="btn btn-green" onclick="changePassword()">Update Password</button>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Security Options</div>
+
+              <div class="pref-row">
+                <div><div class="pref-title">Login Required</div><div class="pref-sub">Protect system with login page.</div></div>
+                <label class="switch"><input id="loginRequired" type="checkbox" checked><span class="slider"></span></label>
+              </div>
+
+              <div class="pref-row">
+                <div><div class="pref-title">Two Step Verification</div><div class="pref-sub">Extra security for admin users.</div></div>
+                <label class="switch"><input id="twoStep" type="checkbox"><span class="slider"></span></label>
+              </div>
+
+              <div class="pref-row">
+                <div><div class="pref-title">Auto Logout</div><div class="pref-sub">Logout user after inactive session.</div></div>
+                <label class="switch"><input id="autoLogout" type="checkbox" checked><span class="slider"></span></label>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn btn-green" onclick="saveSecurity()">Save Security</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const demoCompany={
+  companyName:"AXTOR Trading",
+  businessType:"Paints & Coatings Trading",
+  crNumber:"229718",
+  taxNumber:"",
+  companyEmail:"sales@axtortrading.com",
+  companyPhone:"77790896",
+  companyAddress:"Street 24, Al Attiyah St., Industrial Area, Qatar",
+  currency:"QAR",
+  country:"Qatar"
+};
+
+const demoUsers=[
+  {id:1,name:"Admin User",email:"admin",role:"Admin",password:"1234",status:"Active",phone:""},
+  {id:2,name:"Cashier User",email:"cashier",role:"Cashier",password:"1234",status:"Active",phone:""}
+];
+
+let editingUserId=null;
+
+function logout(){
+  localStorage.removeItem("axtor_logged_in");
+  window.location.href="login.html";
+}
+
+function showTab(tab){
+  document.querySelectorAll(".set-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".page-section").forEach(s=>s.classList.remove("active"));
+
+  if(tab==="company"){
+    tabCompany.classList.add("active");
+    companySection.classList.add("active");
+    location.hash="";
+  }else if(tab==="users"){
+    tabUsers.classList.add("active");
+    usersSection.classList.add("active");
+    renderUsers();
+    location.hash="users";
+  }else if(tab==="preferences"){
+    tabPreferences.classList.add("active");
+    preferencesSection.classList.add("active");
+    loadPreferences();
+    location.hash="preferences";
+  }else if(tab==="security"){
+    tabSecurity.classList.add("active");
+    securitySection.classList.add("active");
+    loadSecurity();
+    location.hash="security";
+  }
+}
+
+function getCompany(){
+  const data=localStorage.getItem("axtor_company");
+  if(!data){
+    localStorage.setItem("axtor_company",JSON.stringify(demoCompany));
+    return demoCompany;
+  }
+  return JSON.parse(data);
+}
+
+function saveCompany(company){
+  localStorage.setItem("axtor_company",JSON.stringify(company));
+}
+
+function loadCompany(){
+  const c=getCompany();
+  Object.keys(demoCompany).forEach(k=>{
+    if(document.getElementById(k)) document.getElementById(k).value=c[k] || "";
+  });
+  topCompanyName.textContent=c.companyName || "AXTOR Trading";
+}
+
+companyForm.addEventListener("submit",function(e){
+  e.preventDefault();
+
+  const company={
+    companyName:companyName.value.trim(),
+    businessType:businessType.value.trim(),
+    crNumber:crNumber.value.trim(),
+    taxNumber:taxNumber.value.trim(),
+    companyEmail:companyEmail.value.trim(),
+    companyPhone:companyPhone.value.trim(),
+    companyAddress:companyAddress.value.trim(),
+    currency:currency.value.trim(),
+    country:country.value.trim()
+  };
+
+  saveCompany(company);
+  loadCompany();
+  companyAlert.innerHTML=`<div class="alert success">Company profile saved successfully.</div>`;
+});
+
+function getUsers(){
+  const data=localStorage.getItem("axtor_users");
+  if(!data){
+    localStorage.setItem("axtor_users",JSON.stringify(demoUsers));
+    return demoUsers;
+  }
+  return JSON.parse(data);
+}
+
+function saveUsers(users){
+  localStorage.setItem("axtor_users",JSON.stringify(users));
+}
+
+function renderUsers(){
+  const users=getUsers();
+
+  usersBody.innerHTML=users.map(u=>`
+    <tr>
+      <td><strong>${u.name}</strong></td>
+      <td>${u.email}</td>
+      <td><span class="status-badge role-badge">${u.role}</span></td>
+      <td>${u.phone || "-"}</td>
+      <td><span class="status-badge ${u.status==="Active"?"active-badge":"inactive-badge"}">${u.status}</span></td>
+      <td>
+        <div class="action-icons">
+          <button class="action-icon" onclick="editUser(${u.id})">✏️</button>
+          <button class="action-icon" onclick="deleteUser(${u.id})">🗑️</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+}
+
+userForm.addEventListener("submit",function(e){
+  e.preventDefault();
+
+  let users=getUsers();
+
+  const user={
+    id:editingUserId ? Number(editingUserId) : Date.now(),
+    name:userName.value.trim(),
+    email:userEmail.value.trim(),
+    role:userRole.value,
+    password:userPassword.value.trim() || "1234",
+    status:userStatus.value,
+    phone:userPhone.value.trim()
+  };
+
+  const duplicate=users.some(u=>u.email.toLowerCase()===user.email.toLowerCase() && String(u.id)!==String(user.id));
+  if(duplicate){
+    alert("This login/email already exists.");
+    return;
+  }
+
+  if(editingUserId){
+    users=users.map(u=>String(u.id)===String(editingUserId)?user:u);
+  }else{
+    users.push(user);
+  }
+
+  saveUsers(users);
+  clearUserForm();
+  renderUsers();
+  alert("User saved successfully.");
+});
+
+function editUser(id){
+  const u=getUsers().find(x=>String(x.id)===String(id));
+  if(!u) return;
+
+  editingUserId=id;
+  userFormTitle.textContent="Edit User";
+  userName.value=u.name;
+  userEmail.value=u.email;
+  userRole.value=u.role;
+  userPassword.value=u.password;
+  userStatus.value=u.status;
+  userPhone.value=u.phone || "";
+}
+
+function deleteUser(id){
+  if(!confirm("Delete this user?")) return;
+
+  const users=getUsers().filter(u=>String(u.id)!==String(id));
+  saveUsers(users);
+  renderUsers();
+}
+
+function clearUserForm(){
+  editingUserId=null;
+  userFormTitle.textContent="Add User";
+  userForm.reset();
+  userRole.value="Admin";
+  userStatus.value="Active";
+}
+
+function getPreferences(){
+  return JSON.parse(localStorage.getItem("axtor_preferences") || "{}");
+}
+
+function savePreferences(){
+  const prefs={
+    defaultTax:defaultTax.value,
+    invoicePrefix:invoicePrefix.value,
+    dateFormat:dateFormat.value,
+    language:language.value,
+    printSize:printSize.value,
+    lowStockDefault:lowStockDefault.value,
+    autoSaveDraft:autoSaveDraft.checked,
+    showStockWarning:showStockWarning.checked,
+    allowNegativeStock:allowNegativeStock.checked
+  };
+
+  localStorage.setItem("axtor_preferences",JSON.stringify(prefs));
+  alert("Preferences saved.");
+}
+
+function loadPreferences(){
+  const p=getPreferences();
+
+  defaultTax.value=p.defaultTax ?? 0;
+  invoicePrefix.value=p.invoicePrefix ?? "INV";
+  dateFormat.value=p.dateFormat ?? "DD/MM/YYYY";
+  language.value=p.language ?? "English";
+  printSize.value=p.printSize ?? "A4 Invoice";
+  lowStockDefault.value=p.lowStockDefault ?? 5;
+  autoSaveDraft.checked=p.autoSaveDraft ?? true;
+  showStockWarning.checked=p.showStockWarning ?? true;
+  allowNegativeStock.checked=p.allowNegativeStock ?? false;
+}
+
+function getSecurity(){
+  return JSON.parse(localStorage.getItem("axtor_security") || "{}");
+}
+
+function saveSecurity(){
+  const sec={
+    loginRequired:loginRequired.checked,
+    twoStep:twoStep.checked,
+    autoLogout:autoLogout.checked
+  };
+
+  localStorage.setItem("axtor_security",JSON.stringify(sec));
+  alert("Security settings saved.");
+}
+
+function loadSecurity(){
+  const s=getSecurity();
+
+  loginRequired.checked=s.loginRequired ?? true;
+  twoStep.checked=s.twoStep ?? false;
+  autoLogout.checked=s.autoLogout ?? true;
+}
+
+function changePassword(){
+  const users=getUsers();
+  const admin=users.find(u=>u.email==="admin");
+
+  if(!admin){
+    passwordAlert.innerHTML=`<div class="alert error">Admin user not found.</div>`;
+    return;
+  }
+
+  if(currentPassword.value !== admin.password){
+    passwordAlert.innerHTML=`<div class="alert error">Current password is wrong.</div>`;
+    return;
+  }
+
+  if(newPassword.value.length < 4){
+    passwordAlert.innerHTML=`<div class="alert error">New password must be at least 4 characters.</div>`;
+    return;
+  }
+
+  if(newPassword.value !== confirmPassword.value){
+    passwordAlert.innerHTML=`<div class="alert error">Confirm password does not match.</div>`;
+    return;
+  }
+
+  admin.password=newPassword.value;
+  saveUsers(users);
+
+  currentPassword.value="";
+  newPassword.value="";
+  confirmPassword.value="";
+
+  passwordAlert.innerHTML=`<div class="alert success">Password updated successfully.</div>`;
+}
+
+function resetSettings(){
+  if(!confirm("Reset company, users, preferences and security demo settings?")) return;
+
+  localStorage.setItem("axtor_company",JSON.stringify(demoCompany));
+  localStorage.setItem("axtor_users",JSON.stringify(demoUsers));
+  localStorage.removeItem("axtor_preferences");
+  localStorage.removeItem("axtor_security");
+
+  loadCompany();
+  loadPreferences();
+  loadSecurity();
+  renderUsers();
+
+  alert("Settings reset.");
+}
+
+function route(){
+  const h=location.hash.replace("#","");
+  if(h==="users") showTab("users");
+  else if(h==="preferences") showTab("preferences");
+  else if(h==="security") showTab("security");
+  else showTab("company");
+}
+
+window.addEventListener("hashchange",route);
+
+loadCompany();
+route();
+</script>
+</body>
+</html>

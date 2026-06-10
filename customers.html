@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXTOR POS Cloud - Customers</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--sidebar-bg:#1a2332;--sidebar-width:210px;--green:#2d7a3a;--green-light:#3a9e4a;--green-bright:#22c55e;--white:#fff;--bg:#f4f6f8;--border:#e2e8f0;--text:#1a202c;--muted:#64748b;--red:#ef4444;--orange:#f97316;--blue:#3b82f6;--font:'Inter',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);font-family:var(--font);font-size:14px;color:var(--text)}
+.sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);position:fixed;top:0;left:0;bottom:0;z-index:50;display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.logo-text{font-size:17px;font-weight:800;color:white}.logo-text span{color:var(--green-bright)}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px}
+.sidebar-nav{flex:1;padding:12px 10px}
+.nav-section{font-size:9px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1.5px;padding:14px 8px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;font-size:13px;color:rgba(255,255,255,.65);text-decoration:none;margin-bottom:1px}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}.nav-item.active{background:var(--green);color:#fff;font-weight:600}
+.nav-icon{font-size:15px;width:18px;text-align:center}.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,.08)}
+.app-main{margin-left:var(--sidebar-width);min-height:100vh}
+.topbar{height:56px;background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:40}
+.tb-search{flex:1;max-width:480px;position:relative}.tb-search input{width:100%;padding:9px 16px 9px 34px;border:1px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;background:#f8fafc;outline:none}
+.tb-search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.topbar-spacer{flex:1}.tb-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.company-btn{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px}.company-avatar{width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.company-name{font-size:13px;font-weight:600}.content{padding:24px}
+.page-section{display:none}.page-section.active{display:block}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.page-title{font-size:22px;font-weight:700}.header-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;border:none;text-decoration:none}
+.btn-outline{border:1px solid var(--border);background:#fff;color:var(--muted)}.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green-light)}
+.btn-red{background:#fef2f2;color:var(--red);border:1px solid #fecaca}.btn-blue{background:#eff6ff;color:var(--blue);border:1px solid #bfdbfe}
+.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px}
+.card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.card-amount{font-size:24px;font-weight:800}
+.table-card{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.table-toolbar{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filter-input,.select-filter{padding:8px 12px;border:1px solid var(--border);border-radius:7px;font-family:var(--font);font-size:12px;outline:none;background:#fff}
+.filter-input{min-width:260px}.toolbar-right{margin-left:auto;display:flex;gap:6px}
+.table-wrap{overflow-x:auto}.sales-table{width:100%;border-collapse:collapse}
+.sales-table th{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:10px 16px;border-bottom:1px solid var(--border);text-align:left;background:#fafbfc;white-space:nowrap}
+.sales-table td{padding:12px 16px;font-size:13px;border-bottom:1px solid #f8fafc;white-space:nowrap}
+.sales-table tr:hover td{background:#fafbfc}
+.status-badge{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;display:inline-block}
+.active-badge{background:#f0fdf4;color:var(--green)}.inactive-badge{background:#f8fafc;color:var(--muted);border:1px solid var(--border)}
+.due-badge{background:#fef2f2;color:var(--red)}.advance-badge{background:#eff6ff;color:var(--blue)}.clear-badge{background:#f0fdf4;color:var(--green)}
+.action-icons{display:flex;gap:5px}.action-icon{width:28px;height:28px;border-radius:5px;border:1px solid var(--border);background:#fff;cursor:pointer}
+.form-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px;max-width:1050px}
+.form-title{font-size:16px;font-weight:800;margin-bottom:16px;color:var(--text);padding-bottom:12px;border-bottom:1px solid var(--border)}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.field.full{grid-column:span 3}.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;outline:none;background:#fff}
+.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green-bright)}
+.form-actions{display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--border);padding-top:16px}
+.details-grid{display:grid;grid-template-columns:320px 1fr;gap:16px}
+.profile-card{text-align:center}.avatar-big{width:78px;height:78px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green-bright));color:white;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin:0 auto 12px}
+.detail-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f8fafc;font-size:13px}.detail-row span{color:var(--muted)}
+.soa-layout{display:grid;grid-template-columns:1fr 320px;gap:16px}.soa-summary{position:sticky;top:72px}
+@media(max-width:1000px){.details-grid,.soa-layout{grid-template-columns:1fr}}
+@media(max-width:900px){.sidebar{position:relative;width:100%;height:auto}.app-main{margin-left:0}.cards-grid,.form-grid{grid-template-columns:1fr}.field.full{grid-column:span 1}.company-name{display:none}}
+@media print{.sidebar,.topbar,.page-header,.no-print{display:none!important}.app-main{margin-left:0}.content{padding:0}}
+</style>
+</head>
+<body>
+<script>
+if(localStorage.getItem("axtor_logged_in") !== "yes"){window.location.href="login.html";}
+</script>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">AXTOR<span>POS</span></div>
+    <div class="logo-sub">CLOUD</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="index.html"><span class="nav-icon">⊞</span> Dashboard</a>
+
+    <div class="nav-section">Sales</div>
+    <a class="nav-item" href="sales.html"><span class="nav-icon">🛒</span> Sales</a>
+    <a class="nav-item" href="sales.html#new-sale"><span class="nav-icon">➕</span> New Sale</a>
+    <a class="nav-item" href="sales.html#saved-invoices"><span class="nav-icon">📄</span> Invoices</a>
+    <a class="nav-item" href="sales.html#returns"><span class="nav-icon">↩️</span> Returns</a>
+
+    <div class="nav-section">Customers</div>
+    <a class="nav-item active" href="customers.html"><span class="nav-icon">👥</span> Customers</a>
+    <a class="nav-item" href="customers.html#add-customer"><span class="nav-icon">➕</span> Add Customer</a>
+
+    <div class="nav-section">Products</div>
+    <a class="nav-item" href="products.html"><span class="nav-icon">🛍️</span> Products</a>
+    <a class="nav-item" href="products.html#add-product"><span class="nav-icon">📦</span> Add Product</a>
+
+    <div class="nav-section">System</div>
+    <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a class="nav-item" href="#" onclick="logout()"><span class="nav-icon">🚪</span> Logout</a>
+  </div>
+</aside>
+
+<main class="app-main">
+  <div class="topbar">
+    <div>☰</div>
+    <div class="tb-search"><span>🔍</span><input placeholder="Search customers..."></div>
+    <div class="topbar-spacer"></div>
+    <div class="tb-icon">❓</div>
+    <div class="tb-icon">🔔</div>
+    <div class="company-btn"><div class="company-avatar">AX</div><div class="company-name">AXTOR Trading</div></div>
+  </div>
+
+  <div class="content">
+
+    <section id="listSection" class="page-section active">
+      <div class="page-header">
+        <div class="page-title">Customers</div>
+        <div class="header-actions">
+          <button class="btn btn-outline" onclick="resetCustomers()">Reset Demo</button>
+          <a class="btn btn-green" href="#add-customer" onclick="showSection('add-customer')">+ Add Customer</a>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card"><div class="card-title">Total Customers</div><div class="card-amount" id="totalCustomers">0</div></div>
+        <div class="card"><div class="card-title">Active Customers</div><div class="card-amount" id="activeCustomers">0</div></div>
+        <div class="card"><div class="card-title">Receivable</div><div class="card-amount" id="totalReceivable">QAR 0</div></div>
+        <div class="card"><div class="card-title">Advance</div><div class="card-amount" id="totalAdvance">QAR 0</div></div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <input class="filter-input" id="customerSearch" placeholder="Search name, phone, email..." onkeyup="renderCustomers()">
+          <select class="select-filter" id="statusFilter" onchange="renderCustomers()">
+            <option value="">All Status</option>
+            <option>Active</option>
+            <option>Inactive</option>
+          </select>
+          <select class="select-filter" id="balanceFilter" onchange="renderCustomers()">
+            <option value="">All Balances</option>
+            <option value="due">Due</option>
+            <option value="advance">Advance</option>
+            <option value="clear">Clear</option>
+          </select>
+          <div class="toolbar-right">
+            <button class="btn btn-outline" onclick="clearFilters()">Clear</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="sales-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Type</th>
+                <th>Credit Limit</th>
+                <th>Balance</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customerBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="formSection" class="page-section">
+      <div class="page-header">
+        <div class="page-title" id="formTitle">Add Customer</div>
+        <div class="header-actions">
+          <a class="btn btn-outline" href="customers.html" onclick="showSection('list')">Back to Customers</a>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <form id="customerForm">
+          <div class="form-title">Customer Information</div>
+
+          <div class="form-grid">
+            <div class="field"><label>Customer Name *</label><input id="name" required></div>
+            <div class="field"><label>Phone *</label><input id="phone" required></div>
+            <div class="field"><label>Email</label><input id="email" type="email"></div>
+
+            <div class="field">
+              <label>Customer Type</label>
+              <select id="type">
+                <option>Retail</option>
+                <option>Wholesale</option>
+                <option>Credit</option>
+                <option>Corporate</option>
+              </select>
+            </div>
+
+            <div class="field"><label>Company Name</label><input id="company"></div>
+            <div class="field"><label>Tax / CR No</label><input id="taxNo"></div>
+
+            <div class="field"><label>Opening Balance</label><input id="openingBalance" type="number" value="0" step="0.01"></div>
+            <div class="field"><label>Credit Limit</label><input id="creditLimit" type="number" value="0" step="0.01"></div>
+            <div class="field">
+              <label>Status</label>
+              <select id="status">
+                <option>Active</option>
+                <option>Inactive</option>
+              </select>
+            </div>
+
+            <div class="field full"><label>Address</label><textarea id="address"></textarea></div>
+            <div class="field full"><label>Notes</label><textarea id="notes"></textarea></div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline" onclick="clearForm()">Clear</button>
+            <button type="submit" class="btn btn-green">Save Customer</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="detailsSection" class="page-section">
+      <div class="page-header">
+        <div class="page-title">Customer Details</div>
+        <div class="header-actions">
+          <button class="btn btn-blue" onclick="showSection('soa')">Customer SOA</button>
+          <button class="btn btn-outline" onclick="editCurrentCustomer()">Edit</button>
+          <a class="btn btn-outline" href="customers.html" onclick="showSection('list')">Back</a>
+        </div>
+      </div>
+
+      <div class="details-grid">
+        <div class="card profile-card">
+          <div class="avatar-big" id="detailAvatar">C</div>
+          <h2 id="detailName">Customer Name</h2>
+          <p style="color:var(--muted);margin-top:4px" id="detailType">Retail</p>
+          <div style="margin-top:12px" id="detailStatus"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Customer Profile</div>
+          <div id="detailInfo"></div>
+        </div>
+      </div>
+
+      <div class="cards-grid" style="margin-top:16px">
+        <div class="card"><div class="card-title">Opening Balance</div><div class="card-amount" id="detailOpening">QAR 0</div></div>
+        <div class="card"><div class="card-title">Invoice Total</div><div class="card-amount" id="detailInvoiceTotal">QAR 0</div></div>
+        <div class="card"><div class="card-title">Payments</div><div class="card-amount" id="detailPayments">QAR 0</div></div>
+        <div class="card"><div class="card-title">Current Balance</div><div class="card-amount" id="detailBalance">QAR 0</div></div>
+      </div>
+    </section>
+
+    <section id="soaSection" class="page-section">
+      <div class="page-header no-print">
+        <div class="page-title">Customer SOA</div>
+        <div class="header-actions">
+          <button class="btn btn-outline" onclick="window.print()">Print</button>
+          <button class="btn btn-green" onclick="addPaymentForCurrent()">Add Payment</button>
+          <a class="btn btn-outline" href="#details" onclick="showSection('details')">Back</a>
+        </div>
+      </div>
+
+      <div class="soa-layout">
+        <div class="table-card">
+          <div class="table-toolbar">
+            <strong id="soaCustomerName">Customer Name</strong>
+          </div>
+          <div class="table-wrap">
+            <table class="sales-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Ref</th>
+                  <th>Description</th>
+                  <th>Debit</th>
+                  <th>Credit</th>
+                  <th>Balance</th>
+                </tr>
+              </thead>
+              <tbody id="soaBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card soa-summary">
+          <div class="card-title">SOA Summary</div>
+          <div class="detail-row"><span>Opening Balance</span><strong id="soaOpening">QAR 0</strong></div>
+          <div class="detail-row"><span>Total Debit</span><strong id="soaDebit">QAR 0</strong></div>
+          <div class="detail-row"><span>Total Credit</span><strong id="soaCredit">QAR 0</strong></div>
+          <div class="detail-row"><span>Final Balance</span><strong id="soaFinal">QAR 0</strong></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+const demoCustomers=[
+  {id:1,name:"Walk-in Customer",phone:"00000000",email:"",type:"Retail",company:"",taxNo:"",openingBalance:0,creditLimit:0,status:"Active",address:"",notes:"Default cash customer"},
+  {id:2,name:"Ahmed Paint Shop",phone:"77790896",email:"sales@example.com",type:"Wholesale",company:"Ahmed Paint Shop",taxNo:"CR-001",openingBalance:2500,creditLimit:10000,status:"Active",address:"Industrial Area, Doha",notes:"Regular customer"},
+  {id:3,name:"Qatar Auto Garage",phone:"55551234",email:"garage@example.com",type:"Credit",company:"Qatar Auto Garage",taxNo:"CR-002",openingBalance:-500,creditLimit:5000,status:"Active",address:"Doha, Qatar",notes:"Advance customer"}
+];
+
+let editingId=null;
+let currentCustomerId=null;
+
+function logout(){
+  localStorage.removeItem("axtor_logged_in");
+  window.location.href="login.html";
+}
+
+function getCustomers(){
+  let data=localStorage.getItem("customers");
+  if(!data){
+    localStorage.setItem("customers",JSON.stringify(demoCustomers));
+    return demoCustomers;
+  }
+  return JSON.parse(data);
+}
+
+function saveCustomers(customers){
+  localStorage.setItem("customers",JSON.stringify(customers));
+}
+
+function getInvoices(){
+  return JSON.parse(localStorage.getItem("axtor_invoices") || "[]");
+}
+
+function getPayments(){
+  return JSON.parse(localStorage.getItem("axtor_customer_payments") || "[]");
+}
+
+function savePayments(payments){
+  localStorage.setItem("axtor_customer_payments",JSON.stringify(payments));
+}
+
+function money(v){
+  return "QAR " + Number(v || 0).toFixed(2);
+}
+
+function initials(name){
+  return (name || "C").split(" ").map(x=>x[0]).join("").substring(0,2).toUpperCase();
+}
+
+function customerInvoices(customerName){
+  return getInvoices().filter(i => (i.customer || "").toLowerCase() === (customerName || "").toLowerCase());
+}
+
+function customerPayments(customerName){
+  return getPayments().filter(p => (p.customer || "").toLowerCase() === (customerName || "").toLowerCase());
+}
+
+function calcBalance(c){
+  const invTotal = customerInvoices(c.name).filter(i=>i.status!=="Returned").reduce((a,i)=>a+Number(i.total||0),0);
+  const payTotal = customerPayments(c.name).reduce((a,p)=>a+Number(p.amount||0),0);
+  return Number(c.openingBalance||0) + invTotal - payTotal;
+}
+
+function balanceBadge(balance){
+  if(balance > 0) return `<span class="status-badge due-badge">Due</span>`;
+  if(balance < 0) return `<span class="status-badge advance-badge">Advance</span>`;
+  return `<span class="status-badge clear-badge">Clear</span>`;
+}
+
+function renderCustomers(){
+  const q=document.getElementById("customerSearch").value.toLowerCase();
+  const st=document.getElementById("statusFilter").value;
+  const bf=document.getElementById("balanceFilter").value;
+
+  const customers=getCustomers();
+
+  const filtered=customers.filter(c=>{
+    const bal=calcBalance(c);
+    const text=(c.name+" "+c.phone+" "+c.email+" "+c.company).toLowerCase();
+    const matchSearch=text.includes(q);
+    const matchStatus=!st || c.status===st;
+    const matchBal=!bf || (bf==="due" && bal>0) || (bf==="advance" && bal<0) || (bf==="clear" && bal===0);
+    return matchSearch && matchStatus && matchBal;
+  });
+
+  document.getElementById("customerBody").innerHTML=filtered.map(c=>{
+    const bal=calcBalance(c);
+    return `
+    <tr>
+      <td><strong>${c.name}</strong><br><small style="color:var(--muted)">${c.company || c.type}</small></td>
+      <td>${c.phone}</td>
+      <td>${c.email || "-"}</td>
+      <td>${c.type}</td>
+      <td>${money(c.creditLimit)}</td>
+      <td><strong>${money(bal)}</strong><br>${balanceBadge(bal)}</td>
+      <td><span class="status-badge ${c.status==="Active"?"active-badge":"inactive-badge"}">${c.status}</span></td>
+      <td>
+        <div class="action-icons">
+          <button class="action-icon" onclick="viewCustomer(${c.id})">👁️</button>
+          <button class="action-icon" onclick="editCustomer(${c.id})">✏️</button>
+          <button class="action-icon" onclick="deleteCustomer(${c.id})">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="8" style="text-align:center;color:var(--muted)">No customers found</td></tr>`;
+
+  updateStats(customers);
+}
+
+function updateStats(customers){
+  const balances=customers.map(c=>calcBalance(c));
+  const receivable=balances.filter(b=>b>0).reduce((a,b)=>a+b,0);
+  const advance=balances.filter(b=>b<0).reduce((a,b)=>a+Math.abs(b),0);
+
+  document.getElementById("totalCustomers").textContent=customers.length;
+  document.getElementById("activeCustomers").textContent=customers.filter(c=>c.status==="Active").length;
+  document.getElementById("totalReceivable").textContent=money(receivable);
+  document.getElementById("totalAdvance").textContent=money(advance);
+}
+
+function showSection(section){
+  document.querySelectorAll(".page-section").forEach(s=>s.classList.remove("active"));
+
+  if(section==="add-customer"){
+    editingId=null;
+    clearForm();
+    document.getElementById("formTitle").textContent="Add Customer";
+    document.getElementById("formSection").classList.add("active");
+    location.hash="add-customer";
+  }else if(section==="details"){
+    document.getElementById("detailsSection").classList.add("active");
+    renderDetails();
+    location.hash="details";
+  }else if(section==="soa"){
+    document.getElementById("soaSection").classList.add("active");
+    renderSOA();
+    location.hash="customer-soa";
+  }else{
+    document.getElementById("listSection").classList.add("active");
+    renderCustomers();
+    location.hash="";
+  }
+}
+
+function viewCustomer(id){
+  currentCustomerId=id;
+  showSection("details");
+}
+
+function getCurrentCustomer(){
+  return getCustomers().find(c=>String(c.id)===String(currentCustomerId));
+}
+
+function renderDetails(){
+  const c=getCurrentCustomer();
+  if(!c){
+    showSection("list");
+    return;
+  }
+
+  const invTotal=customerInvoices(c.name).filter(i=>i.status!=="Returned").reduce((a,i)=>a+Number(i.total||0),0);
+  const payTotal=customerPayments(c.name).reduce((a,p)=>a+Number(p.amount||0),0);
+  const bal=calcBalance(c);
+
+  document.getElementById("detailAvatar").textContent=initials(c.name);
+  document.getElementById("detailName").textContent=c.name;
+  document.getElementById("detailType").textContent=c.type;
+  document.getElementById("detailStatus").innerHTML=`<span class="status-badge ${c.status==="Active"?"active-badge":"inactive-badge"}">${c.status}</span>`;
+
+  document.getElementById("detailInfo").innerHTML=`
+    <div class="detail-row"><span>Phone</span><strong>${c.phone}</strong></div>
+    <div class="detail-row"><span>Email</span><strong>${c.email || "-"}</strong></div>
+    <div class="detail-row"><span>Company</span><strong>${c.company || "-"}</strong></div>
+    <div class="detail-row"><span>Tax / CR No</span><strong>${c.taxNo || "-"}</strong></div>
+    <div class="detail-row"><span>Credit Limit</span><strong>${money(c.creditLimit)}</strong></div>
+    <div class="detail-row"><span>Address</span><strong>${c.address || "-"}</strong></div>
+    <div class="detail-row"><span>Notes</span><strong>${c.notes || "-"}</strong></div>
+  `;
+
+  document.getElementById("detailOpening").textContent=money(c.openingBalance);
+  document.getElementById("detailInvoiceTotal").textContent=money(invTotal);
+  document.getElementById("detailPayments").textContent=money(payTotal);
+  document.getElementById("detailBalance").textContent=money(bal);
+}
+
+function editCurrentCustomer(){
+  const c=getCurrentCustomer();
+  if(c) editCustomer(c.id);
+}
+
+function editCustomer(id){
+  const c=getCustomers().find(x=>String(x.id)===String(id));
+  if(!c) return;
+
+  editingId=id;
+  currentCustomerId=id;
+  document.getElementById("formTitle").textContent="Edit Customer";
+
+  ["name","phone","email","type","company","taxNo","openingBalance","creditLimit","status","address","notes"].forEach(k=>{
+    document.getElementById(k).value=c[k] ?? "";
+  });
+
+  document.querySelectorAll(".page-section").forEach(s=>s.classList.remove("active"));
+  document.getElementById("formSection").classList.add("active");
+  location.hash="edit-customer";
+}
+
+function deleteCustomer(id){
+  if(!confirm("Delete this customer?")) return;
+
+  const customers=getCustomers().filter(c=>String(c.id)!==String(id));
+  saveCustomers(customers);
+  renderCustomers();
+}
+
+function clearForm(){
+  document.getElementById("customerForm").reset();
+  document.getElementById("openingBalance").value=0;
+  document.getElementById("creditLimit").value=0;
+  document.getElementById("status").value="Active";
+}
+
+document.getElementById("customerForm").addEventListener("submit",function(e){
+  e.preventDefault();
+
+  let customers=getCustomers();
+
+  const customer={
+    id: editingId ? Number(editingId) : Date.now(),
+    name:name.value.trim(),
+    phone:phone.value.trim(),
+    email:email.value.trim(),
+    type:type.value,
+    company:company.value.trim(),
+    taxNo:taxNo.value.trim(),
+    openingBalance:Number(openingBalance.value||0),
+    creditLimit:Number(creditLimit.value||0),
+    status:status.value,
+    address:address.value.trim(),
+    notes:notes.value.trim()
+  };
+
+  const duplicatePhone=customers.some(c=>c.phone===customer.phone && String(c.id)!==String(customer.id));
+  if(duplicatePhone){
+    alert("This phone number already exists.");
+    return;
+  }
+
+  if(editingId){
+    customers=customers.map(c=>String(c.id)===String(editingId)?customer:c);
+  }else{
+    customers.push(customer);
+  }
+
+  saveCustomers(customers);
+  alert("Customer saved successfully.");
+
+  currentCustomerId=customer.id;
+  editingId=null;
+  showSection("details");
+});
+
+function clearFilters(){
+  customerSearch.value="";
+  statusFilter.value="";
+  balanceFilter.value="";
+  renderCustomers();
+}
+
+function resetCustomers(){
+  if(confirm("Reset demo customers?")){
+    saveCustomers(demoCustomers);
+    renderCustomers();
+  }
+}
+
+function renderSOA(){
+  const c=getCurrentCustomer();
+  if(!c){
+    showSection("list");
+    return;
+  }
+
+  document.getElementById("soaCustomerName").textContent=c.name;
+
+  let rows=[];
+  let running=0;
+
+  if(Number(c.openingBalance||0)!==0){
+    running += Number(c.openingBalance||0);
+    rows.push({
+      date:"Opening",
+      ref:"OPENING",
+      desc:"Opening Balance",
+      debit:Number(c.openingBalance)>0 ? Number(c.openingBalance) : 0,
+      credit:Number(c.openingBalance)<0 ? Math.abs(Number(c.openingBalance)) : 0,
+      balance:running
+    });
+  }
+
+  customerInvoices(c.name).filter(i=>i.status!=="Returned").forEach(i=>{
+    running += Number(i.total||0);
+    rows.push({
+      date:i.date,
+      ref:i.no,
+      desc:"Sales Invoice",
+      debit:Number(i.total||0),
+      credit:0,
+      balance:running
+    });
+  });
+
+  customerPayments(c.name).forEach(p=>{
+    running -= Number(p.amount||0);
+    rows.push({
+      date:p.date,
+      ref:p.ref,
+      desc:p.note || "Customer Payment",
+      debit:0,
+      credit:Number(p.amount||0),
+      balance:running
+    });
+  });
+
+  rows.sort((a,b)=>{
+    if(a.date==="Opening") return -1;
+    if(b.date==="Opening") return 1;
+    return new Date(a.date) - new Date(b.date);
+  });
+
+  running=0;
+  rows=rows.map(r=>{
+    running += Number(r.debit||0) - Number(r.credit||0);
+    return {...r,balance:running};
+  });
+
+  document.getElementById("soaBody").innerHTML=rows.map(r=>`
+    <tr>
+      <td>${r.date}</td>
+      <td>${r.ref}</td>
+      <td>${r.desc}</td>
+      <td>${r.debit ? money(r.debit) : "-"}</td>
+      <td>${r.credit ? money(r.credit) : "-"}</td>
+      <td><strong>${money(r.balance)}</strong></td>
+    </tr>
+  `).join("") || `<tr><td colspan="6" style="text-align:center;color:var(--muted)">No SOA transactions found</td></tr>`;
+
+  const totalDebit=rows.reduce((a,r)=>a+Number(r.debit||0),0);
+  const totalCredit=rows.reduce((a,r)=>a+Number(r.credit||0),0);
+  const finalBalance=totalDebit-totalCredit;
+
+  document.getElementById("soaOpening").textContent=money(c.openingBalance);
+  document.getElementById("soaDebit").textContent=money(totalDebit);
+  document.getElementById("soaCredit").textContent=money(totalCredit);
+  document.getElementById("soaFinal").textContent=money(finalBalance);
+}
+
+function addPaymentForCurrent(){
+  const c=getCurrentCustomer();
+  if(!c) return;
+
+  const amount=Number(prompt("Enter payment amount QAR:") || 0);
+  if(amount<=0){
+    alert("Invalid amount.");
+    return;
+  }
+
+  const payments=getPayments();
+  payments.push({
+    id:Date.now(),
+    date:new Date().toISOString().slice(0,10),
+    ref:"PAY-"+String(Date.now()).slice(-5),
+    customer:c.name,
+    amount:amount,
+    note:"Customer Payment"
+  });
+
+  savePayments(payments);
+  renderSOA();
+  alert("Payment added.");
+}
+
+window.addEventListener("hashchange",route);
+
+function route(){
+  const h=location.hash.replace("#","");
+  if(h==="add-customer"){
+    showSection("add-customer");
+  }else if(h==="customer-soa"){
+    showSection("soa");
+  }else if(h==="details"){
+    showSection("details");
+  }else{
+    showSection("list");
+  }
+}
+
+route();
+renderCustomers();
+</script>
+</body>
+</html>

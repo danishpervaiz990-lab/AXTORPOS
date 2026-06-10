@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXTOR POS Cloud - Sales</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--sidebar-bg:#1a2332;--sidebar-width:210px;--green:#2d7a3a;--green-light:#3a9e4a;--green-bright:#22c55e;--white:#fff;--bg:#f4f6f8;--border:#e2e8f0;--text:#1a202c;--muted:#64748b;--red:#ef4444;--orange:#f97316;--blue:#3b82f6;--font:'Inter',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);font-family:var(--font);font-size:14px;color:var(--text)}
+.sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);position:fixed;top:0;left:0;bottom:0;z-index:50;display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.logo-text{font-size:17px;font-weight:800;color:white}.logo-text span{color:var(--green-bright)}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px}
+.sidebar-nav{flex:1;padding:12px 10px}.nav-section{font-size:9px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1.5px;padding:14px 8px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;font-size:13px;color:rgba(255,255,255,.65);text-decoration:none;margin-bottom:1px}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}.nav-item.active{background:var(--green);color:#fff;font-weight:600}
+.nav-icon{font-size:15px;width:18px;text-align:center}.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,.08)}
+.app-main{margin-left:var(--sidebar-width);min-height:100vh}
+.topbar{height:56px;background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:40}
+.tb-search{flex:1;max-width:480px;position:relative}.tb-search input{width:100%;padding:9px 16px 9px 34px;border:1px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;background:#f8fafc;outline:none}
+.tb-search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.topbar-spacer{flex:1}.tb-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.company-btn{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px}.company-avatar{width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.company-name{font-size:13px;font-weight:600}.content{padding:24px}
+.page-section{display:none}.page-section.active{display:block}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.page-title{font-size:22px;font-weight:700}
+.header-actions{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;border:none;text-decoration:none}
+.btn-outline{border:1px solid var(--border);background:#fff;color:var(--muted)}.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green-light)}
+.btn-red{background:#fef2f2;color:var(--red);border:1px solid #fecaca}.btn-blue{background:#eff6ff;color:var(--blue);border:1px solid #bfdbfe}
+.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px}
+.card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}.card-amount{font-size:24px;font-weight:800}
+.table-card{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden}.table-toolbar{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.filter-input,.select-filter{padding:8px 12px;border:1px solid var(--border);border-radius:7px;font-family:var(--font);font-size:12px;outline:none;background:#fff}.filter-input{min-width:260px}
+.table-wrap{overflow-x:auto}.sales-table{width:100%;border-collapse:collapse}.sales-table th{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:10px 16px;border-bottom:1px solid var(--border);text-align:left;background:#fafbfc;white-space:nowrap}
+.sales-table td{padding:12px 16px;font-size:13px;border-bottom:1px solid #f8fafc;white-space:nowrap}.sales-table tr:hover td{background:#fafbfc}
+.status-badge{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;display:inline-block}.paid{background:#f0fdf4;color:var(--green)}.pending{background:#fff7ed;color:var(--orange)}.draft{background:#f8fafc;color:var(--muted);border:1px solid var(--border)}.returned{background:#fef2f2;color:var(--red)}
+.action-icons{display:flex;gap:5px}.action-icon{width:28px;height:28px;border-radius:5px;border:1px solid var(--border);background:#fff;cursor:pointer}
+.sale-layout{display:grid;grid-template-columns:1fr 360px;gap:16px}.panel{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.field input,.field select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;outline:none}
+.product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.product-card{border:1px solid var(--border);border-radius:8px;padding:12px 10px;text-align:center;cursor:pointer;background:#fff}
+.product-card:hover{border-color:var(--green-bright);box-shadow:0 2px 8px rgba(34,197,94,.1)}.prod-icon{font-size:24px;margin-bottom:6px}.prod-name{font-size:12px;font-weight:700}.prod-price{font-size:12px;color:var(--green);font-weight:800;margin-top:4px}.prod-stock{font-size:10px;color:var(--muted);margin-top:3px}
+.order-table{width:100%;border-collapse:collapse}.order-table th,.order-table td{font-size:12px;padding:8px;border-bottom:1px solid #f8fafc;text-align:left}.qty-btn{width:22px;height:22px;border:1px solid var(--border);background:#fff;border-radius:4px;cursor:pointer}
+.summary-row{display:flex;justify-content:space-between;margin-bottom:9px;font-size:13px}.summary-total{border-top:1px solid var(--border);padding-top:12px;margin-top:12px;font-size:18px;font-weight:800;color:var(--green)}
+.invoice-box{background:#fff;border:1px solid var(--border);border-radius:10px;max-width:850px;margin:auto;padding:26px}.invoice-head{display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:16px}.invoice-title{font-size:26px;font-weight:800}.print-only{display:none}
+@media(max-width:1100px){.sale-layout{grid-template-columns:1fr}.product-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.sidebar{position:relative;width:100%;height:auto}.app-main{margin-left:0}.cards-grid,.form-grid{grid-template-columns:1fr}.company-name{display:none}}
+@media print{.sidebar,.topbar,.page-header,.no-print{display:none!important}.app-main{margin-left:0}.content{padding:0}.invoice-box{border:none}}
+</style>
+</head>
+<body>
+<script>
+if(localStorage.getItem("axtor_logged_in") !== "yes"){window.location.href="login.html";}
+</script>
+
+<aside class="sidebar">
+  <div class="sidebar-logo"><div class="logo-text">AXTOR<span>POS</span></div><div class="logo-sub">CLOUD</div></div>
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="index.html"><span class="nav-icon">⊞</span> Dashboard</a>
+    <div class="nav-section">Sales</div>
+    <a class="nav-item active" href="sales.html"><span class="nav-icon">🛒</span> Sales</a>
+    <a class="nav-item" href="sales.html#new-sale"><span class="nav-icon">➕</span> New Sale</a>
+    <a class="nav-item" href="sales.html#saved-invoices"><span class="nav-icon">📄</span> Invoices</a>
+    <a class="nav-item" href="sales.html#returns"><span class="nav-icon">↩️</span> Returns</a>
+    <div class="nav-section">Customers</div>
+    <a class="nav-item" href="customers.html"><span class="nav-icon">👥</span> Customers</a>
+    <a class="nav-item" href="customers.html#add-customer"><span class="nav-icon">➕</span> Add Customer</a>
+    <div class="nav-section">Products</div>
+    <a class="nav-item" href="products.html"><span class="nav-icon">🛍️</span> Products</a>
+    <a class="nav-item" href="products.html#add-product"><span class="nav-icon">📦</span> Add Product</a>
+    <div class="nav-section">System</div>
+    <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+  </nav>
+  <div class="sidebar-footer"><a class="nav-item" href="#" onclick="logout()"><span class="nav-icon">🚪</span> Logout</a></div>
+</aside>
+
+<main class="app-main">
+  <div class="topbar">
+    <div>☰</div>
+    <div class="tb-search"><span>🔍</span><input placeholder="Search sales..."></div>
+    <div class="topbar-spacer"></div>
+    <div class="tb-icon">❓</div><div class="tb-icon">🔔</div>
+    <div class="company-btn"><div class="company-avatar">AX</div><div class="company-name">AXTOR Trading</div></div>
+  </div>
+
+  <div class="content">
+
+    <section id="salesSection" class="page-section active">
+      <div class="page-header">
+        <div class="page-title">Sales</div>
+        <div class="header-actions">
+          <a class="btn btn-green" href="#new-sale" onclick="showSection('new-sale')">+ New Sale</a>
+          <a class="btn btn-outline" href="#saved-invoices" onclick="showSection('saved-invoices')">Saved Invoices</a>
+          <a class="btn btn-outline" href="#returns" onclick="showSection('returns')">Returns</a>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card"><div class="card-title">Total Sales</div><div class="card-amount" id="totalSales">QAR 0</div></div>
+        <div class="card"><div class="card-title">Paid Invoices</div><div class="card-amount" id="paidCount">0</div></div>
+        <div class="card"><div class="card-title">Draft Invoices</div><div class="card-amount" id="draftCount">0</div></div>
+        <div class="card"><div class="card-title">Returns</div><div class="card-amount" id="returnCount">0</div></div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <input class="filter-input" id="invoiceSearch" placeholder="Search invoice/customer..." onkeyup="renderInvoices()">
+          <select class="select-filter" id="statusFilter" onchange="renderInvoices()">
+            <option value="">All Status</option><option>Paid</option><option>Draft</option><option>Returned</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="sales-table">
+            <thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="invoiceBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="newSaleSection" class="page-section">
+      <div class="page-header">
+        <div class="page-title">New Sale</div>
+        <div class="header-actions"><a class="btn btn-outline" href="sales.html" onclick="showSection('sales')">Back</a></div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field"><label>Invoice No</label><input id="saleInvoiceNo" readonly></div>
+        <div class="field"><label>Date</label><input id="saleDate" type="date"></div>
+        <div class="field"><label>Customer</label><input id="saleCustomer" placeholder="Walk-in Customer"></div>
+      </div>
+
+      <div class="sale-layout">
+        <div>
+          <div class="panel" style="margin-bottom:12px">
+            <div class="field"><input id="productSearch" placeholder="Search product..." onkeyup="renderProductCards()"></div>
+          </div>
+          <div class="panel">
+            <div class="product-grid" id="productGrid"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 style="margin-bottom:12px">Current Order</h3>
+          <table class="order-table">
+            <thead><tr><th>Item</th><th>Qty</th><th>Total</th><th></th></tr></thead>
+            <tbody id="cartBody"></tbody>
+          </table>
+
+          <div style="margin-top:16px">
+            <div class="summary-row"><span>Subtotal</span><strong id="subTotal">QAR 0.00</strong></div>
+            <div class="summary-row"><span>Discount</span><input id="discount" type="number" value="0" min="0" oninput="renderCart()" style="width:90px;padding:6px;border:1px solid var(--border);border-radius:6px"></div>
+            <div class="summary-row"><span>Tax</span><strong id="taxTotal">QAR 0.00</strong></div>
+            <div class="summary-row summary-total"><span>Total</span><span id="grandTotal">QAR 0.00</span></div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">
+            <button class="btn btn-outline" onclick="saveDraft()">Save Draft</button>
+            <button class="btn btn-green" onclick="goPayment()">Payment</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="paymentSection" class="page-section">
+      <div class="page-header">
+        <div class="page-title">Payment</div>
+        <div class="header-actions"><a class="btn btn-outline" href="#new-sale" onclick="showSection('new-sale')">Back to Sale</a></div>
+      </div>
+
+      <div class="panel" style="max-width:560px">
+        <div class="summary-row"><span>Invoice</span><strong id="payInvoiceNo">-</strong></div>
+        <div class="summary-row"><span>Customer</span><strong id="payCustomer">-</strong></div>
+        <div class="summary-row summary-total"><span>Total Payable</span><span id="payTotal">QAR 0.00</span></div>
+
+        <div class="field" style="margin-top:18px">
+          <label>Payment Method</label>
+          <select id="paymentMethod">
+            <option>Cash</option><option>Card</option><option>Bank Transfer</option><option>Credit</option>
+          </select>
+        </div>
+
+        <div class="field" style="margin-top:12px">
+          <label>Amount Received</label>
+          <input id="amountReceived" type="number" min="0" oninput="calcChange()">
+        </div>
+
+        <div class="summary-row" style="margin-top:12px"><span>Change / Balance</span><strong id="changeDue">QAR 0.00</strong></div>
+
+        <button class="btn btn-green" style="margin-top:16px;width:100%;justify-content:center" onclick="completePayment()">Complete Payment</button>
+      </div>
+    </section>
+
+    <section id="savedInvoicesSection" class="page-section">
+      <div class="page-header">
+        <div class="page-title">Saved Invoices</div>
+        <div class="header-actions"><a class="btn btn-green" href="#new-sale" onclick="showSection('new-sale')">+ New Sale</a></div>
+      </div>
+      <div class="table-card">
+        <div class="table-wrap">
+          <table class="sales-table">
+            <thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="savedBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="returnsSection" class="page-section">
+      <div class="page-header">
+        <div class="page-title">Returns</div>
+        <div class="header-actions"><button class="btn btn-outline" onclick="alert('Open invoice and press Return button.')">New Return</button></div>
+      </div>
+      <div class="table-card">
+        <div class="table-wrap">
+          <table class="sales-table">
+            <thead><tr><th>Return No</th><th>Date</th><th>Original Invoice</th><th>Customer</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody id="returnsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="invoiceViewSection" class="page-section">
+      <div class="page-header no-print">
+        <div class="page-title">Invoice View</div>
+        <div class="header-actions">
+          <button class="btn btn-outline" onclick="window.print()">Print</button>
+          <button class="btn btn-red" onclick="returnInvoice()">Return</button>
+          <a class="btn btn-outline" href="#saved-invoices" onclick="showSection('saved-invoices')">Back</a>
+        </div>
+      </div>
+      <div class="invoice-box" id="invoiceBox"></div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+const demoProducts=[
+{id:1,name:"2K Automotive Paint",sku:"AX-PNT-001",category:"Automotive Paint",salePrice:120,cost:85,stock:24,minStock:5,tax:0},
+{id:2,name:"HS Clear Coat 1L",sku:"AX-CLR-001",category:"Clear Coat",salePrice:45,cost:30,stock:4,minStock:5,tax:0},
+{id:3,name:"NC Thinner 5L",sku:"AX-THN-001",category:"Thinner",salePrice:38,cost:25,stock:10,minStock:5,tax:0},
+{id:4,name:"Epoxy Primer",sku:"AX-PRI-001",category:"Primer",salePrice:95,cost:68,stock:12,minStock:5,tax:0}
+];
+
+let cart=[];
+let currentInvoice=null;
+let viewingInvoiceId=null;
+
+function logout(){localStorage.removeItem("axtor_logged_in");window.location.href="login.html";}
+function getProducts(){let d=localStorage.getItem("axtor_products");if(!d){localStorage.setItem("axtor_products",JSON.stringify(demoProducts));return demoProducts;}return JSON.parse(d);}
+function saveProducts(p){localStorage.setItem("axtor_products",JSON.stringify(p));}
+function getInvoices(){return JSON.parse(localStorage.getItem("axtor_invoices")||"[]");}
+function saveInvoices(i){localStorage.setItem("axtor_invoices",JSON.stringify(i));}
+function getReturns(){return JSON.parse(localStorage.getItem("axtor_returns")||"[]");}
+function saveReturns(r){localStorage.setItem("axtor_returns",JSON.stringify(r));}
+
+function showSection(name){
+  document.querySelectorAll(".page-section").forEach(s=>s.classList.remove("active"));
+  if(name==="new-sale"){newSaleSection.classList.add("active");prepareNewSale();}
+  else if(name==="payment"){paymentSection.classList.add("active");renderPayment();}
+  else if(name==="saved-invoices"){savedInvoicesSection.classList.add("active");renderSaved();}
+  else if(name==="returns"){returnsSection.classList.add("active");renderReturns();}
+  else if(name==="invoice-view"){invoiceViewSection.classList.add("active");renderInvoiceView();}
+  else{salesSection.classList.add("active");renderInvoices();}
+}
+
+function prepareNewSale(){
+  if(!saleInvoiceNo.value){
+    saleInvoiceNo.value="INV-"+String(Date.now()).slice(-6);
+    saleDate.value=new Date().toISOString().slice(0,10);
+    saleCustomer.value="Walk-in Customer";
+  }
+  renderProductCards();
+  renderCart();
+}
+
+function renderProductCards(){
+  const q=(productSearch?.value||"").toLowerCase();
+  const products=getProducts().filter(p=>(p.name+" "+p.sku).toLowerCase().includes(q));
+  productGrid.innerHTML=products.map(p=>`
+    <div class="product-card" onclick="addToCart(${p.id})">
+      <div class="prod-icon">📦</div>
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-price">QAR ${Number(p.salePrice).toFixed(2)}</div>
+      <div class="prod-stock">Stock: ${p.stock}</div>
+    </div>`).join("");
+}
+
+function addToCart(id){
+  const p=getProducts().find(x=>x.id===id);
+  if(!p)return;
+  const ex=cart.find(x=>x.id===id);
+  if(ex){ex.qty++;}
+  else{cart.push({id:p.id,name:p.name,price:Number(p.salePrice),tax:Number(p.tax||0),qty:1});}
+  renderCart();
+}
+
+function renderCart(){
+  cartBody.innerHTML=cart.length?cart.map(item=>`
+    <tr>
+      <td>${item.name}<br><small>QAR ${item.price.toFixed(2)}</small></td>
+      <td><button class="qty-btn" onclick="changeQty(${item.id},-1)">-</button> ${item.qty} <button class="qty-btn" onclick="changeQty(${item.id},1)">+</button></td>
+      <td>QAR ${(item.price*item.qty).toFixed(2)}</td>
+      <td><button class="action-icon" onclick="removeCart(${item.id})">×</button></td>
+    </tr>`).join(""):`<tr><td colspan="4" style="text-align:center;color:var(--muted)">No items added</td></tr>`;
+
+  const sub=cart.reduce((a,i)=>a+i.price*i.qty,0);
+  const disc=Number(discount?.value||0);
+  const tax=cart.reduce((a,i)=>a+((i.price*i.qty)*i.tax/100),0);
+  const total=Math.max(0,sub-disc+tax);
+
+  subTotal.textContent="QAR "+sub.toFixed(2);
+  taxTotal.textContent="QAR "+tax.toFixed(2);
+  grandTotal.textContent="QAR "+total.toFixed(2);
+}
+
+function changeQty(id,n){
+  const item=cart.find(x=>x.id===id);
+  if(!item)return;
+  item.qty+=n;
+  if(item.qty<=0)cart=cart.filter(x=>x.id!==id);
+  renderCart();
+}
+
+function removeCart(id){cart=cart.filter(x=>x.id!==id);renderCart();}
+
+function buildInvoice(status){
+  const sub=cart.reduce((a,i)=>a+i.price*i.qty,0);
+  const disc=Number(discount.value||0);
+  const tax=cart.reduce((a,i)=>a+((i.price*i.qty)*i.tax/100),0);
+  const total=Math.max(0,sub-disc+tax);
+  return {
+    id:Date.now(),
+    no:saleInvoiceNo.value,
+    date:saleDate.value,
+    customer:saleCustomer.value||"Walk-in Customer",
+    items:cart,
+    subtotal:sub,
+    discount:disc,
+    tax:tax,
+    total:total,
+    paymentMethod:"",
+    status:status
+  };
+}
+
+function saveDraft(){
+  if(cart.length===0){alert("Please add item first.");return;}
+  const invoices=getInvoices();
+  invoices.push(buildInvoice("Draft"));
+  saveInvoices(invoices);
+  alert("Draft saved.");
+  resetSale();
+  location.hash="saved-invoices";
+  showSection("saved-invoices");
+}
+
+function goPayment(){
+  if(cart.length===0){alert("Please add item first.");return;}
+  currentInvoice=buildInvoice("Pending");
+  location.hash="payment";
+  showSection("payment");
+}
+
+function renderPayment(){
+  if(!currentInvoice){showSection("new-sale");return;}
+  payInvoiceNo.textContent=currentInvoice.no;
+  payCustomer.textContent=currentInvoice.customer;
+  payTotal.textContent="QAR "+currentInvoice.total.toFixed(2);
+  amountReceived.value=currentInvoice.total.toFixed(2);
+  calcChange();
+}
+
+function calcChange(){
+  if(!currentInvoice)return;
+  const change=Number(amountReceived.value||0)-currentInvoice.total;
+  changeDue.textContent="QAR "+change.toFixed(2);
+}
+
+function completePayment(){
+  if(!currentInvoice)return;
+  currentInvoice.status="Paid";
+  currentInvoice.paymentMethod=paymentMethod.value;
+  const invoices=getInvoices();
+  invoices.push(currentInvoice);
+  saveInvoices(invoices);
+  viewingInvoiceId=currentInvoice.id;
+  resetSale();
+  location.hash="invoice-view";
+  showSection("invoice-view");
+}
+
+function resetSale(){
+  cart=[];
+  currentInvoice=null;
+  saleInvoiceNo.value="";
+  saleCustomer.value="";
+  discount.value=0;
+}
+
+function renderInvoices(){
+  const q=(invoiceSearch?.value||"").toLowerCase();
+  const st=statusFilter?.value||"";
+  const invoices=getInvoices().filter(i=>{
+    return (i.no+" "+i.customer).toLowerCase().includes(q) && (!st || i.status===st);
+  });
+  invoiceBody.innerHTML=invoices.map(rowInvoice).join("") || `<tr><td colspan="8" style="text-align:center;color:var(--muted)">No invoices found</td></tr>`;
+  updateStats();
+}
+
+function rowInvoice(i){
+  const cls=i.status==="Paid"?"paid":i.status==="Draft"?"draft":i.status==="Returned"?"returned":"pending";
+  return `<tr>
+    <td><strong>${i.no}</strong></td><td>${i.date}</td><td>${i.customer}</td><td>${i.items.length}</td>
+    <td>QAR ${Number(i.total).toFixed(2)}</td><td>${i.paymentMethod||"-"}</td>
+    <td><span class="status-badge ${cls}">${i.status}</span></td>
+    <td><div class="action-icons"><button class="action-icon" onclick="viewInvoice(${i.id})">👁️</button><button class="action-icon" onclick="deleteInvoice(${i.id})">🗑️</button></div></td>
+  </tr>`;
+}
+
+function renderSaved(){
+  const invoices=getInvoices();
+  savedBody.innerHTML=invoices.map(i=>{
+    const cls=i.status==="Paid"?"paid":i.status==="Draft"?"draft":i.status==="Returned"?"returned":"pending";
+    return `<tr><td><strong>${i.no}</strong></td><td>${i.date}</td><td>${i.customer}</td><td>QAR ${Number(i.total).toFixed(2)}</td><td><span class="status-badge ${cls}">${i.status}</span></td><td><button class="btn btn-outline" onclick="viewInvoice(${i.id})">View</button></td></tr>`;
+  }).join("") || `<tr><td colspan="6" style="text-align:center;color:var(--muted)">No saved invoices</td></tr>`;
+}
+
+function viewInvoice(id){
+  viewingInvoiceId=id;
+  location.hash="invoice-view";
+  showSection("invoice-view");
+}
+
+function renderInvoiceView(){
+  const i=getInvoices().find(x=>String(x.id)===String(viewingInvoiceId));
+  if(!i){invoiceBox.innerHTML="<p>Invoice not found.</p>";return;}
+  invoiceBox.innerHTML=`
+    <div class="invoice-head">
+      <div>
+        <div class="logo-text" style="color:var(--text)">AXTOR<span>POS</span></div>
+        <div style="color:var(--muted);font-size:12px;margin-top:4px">AXTOR Trading, Qatar</div>
+      </div>
+      <div style="text-align:right">
+        <div class="invoice-title">INVOICE</div>
+        <div>${i.no}</div>
+        <div>${i.date}</div>
+      </div>
+    </div>
+    <div style="margin-bottom:16px">
+      <strong>Bill To:</strong><br>${i.customer}<br>
+      <span class="status-badge ${i.status==="Paid"?"paid":i.status==="Returned"?"returned":"draft"}">${i.status}</span>
+    </div>
+    <table class="sales-table">
+      <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+      <tbody>${i.items.map(x=>`<tr><td>${x.name}</td><td>${x.qty}</td><td>QAR ${x.price.toFixed(2)}</td><td>QAR ${(x.price*x.qty).toFixed(2)}</td></tr>`).join("")}</tbody>
+    </table>
+    <div style="max-width:300px;margin-left:auto;margin-top:16px">
+      <div class="summary-row"><span>Subtotal</span><strong>QAR ${i.subtotal.toFixed(2)}</strong></div>
+      <div class="summary-row"><span>Discount</span><strong>QAR ${i.discount.toFixed(2)}</strong></div>
+      <div class="summary-row"><span>Tax</span><strong>QAR ${i.tax.toFixed(2)}</strong></div>
+      <div class="summary-row summary-total"><span>Total</span><span>QAR ${i.total.toFixed(2)}</span></div>
+    </div>`;
+}
+
+function returnInvoice(){
+  const invoices=getInvoices();
+  const i=invoices.find(x=>String(x.id)===String(viewingInvoiceId));
+  if(!i || i.status==="Returned"){alert("Cannot return this invoice.");return;}
+  if(!confirm("Return this invoice?"))return;
+  i.status="Returned";
+  saveInvoices(invoices);
+  const returns=getReturns();
+  returns.push({id:Date.now(),date:new Date().toISOString().slice(0,10),invoice:i.no,customer:i.customer,amount:i.total,status:"Returned"});
+  saveReturns(returns);
+  renderInvoiceView();
+}
+
+function renderReturns(){
+  const returns=getReturns();
+  returnsBody.innerHTML=returns.map(r=>`<tr><td>RET-${String(r.id).slice(-5)}</td><td>${r.date}</td><td>${r.invoice}</td><td>${r.customer}</td><td>QAR ${Number(r.amount).toFixed(2)}</td><td><span class="status-badge returned">${r.status}</span></td></tr>`).join("") || `<tr><td colspan="6" style="text-align:center;color:var(--muted)">No returns found</td></tr>`;
+}
+
+function deleteInvoice(id){
+  if(!confirm("Delete this invoice?"))return;
+  saveInvoices(getInvoices().filter(i=>String(i.id)!==String(id)));
+  renderInvoices();
+  renderSaved();
+}
+
+function updateStats(){
+  const invoices=getInvoices();
+  const returns=getReturns();
+  totalSales.textContent="QAR "+invoices.filter(i=>i.status==="Paid").reduce((a,i)=>a+Number(i.total),0).toFixed(2);
+  paidCount.textContent=invoices.filter(i=>i.status==="Paid").length;
+  draftCount.textContent=invoices.filter(i=>i.status==="Draft").length;
+  returnCount.textContent=returns.length;
+}
+
+window.addEventListener("hashchange",()=>route());
+function route(){
+  const h=location.hash.replace("#","");
+  if(h==="new-sale")showSection("new-sale");
+  else if(h==="payment")showSection("payment");
+  else if(h==="saved-invoices")showSection("saved-invoices");
+  else if(h==="returns")showSection("returns");
+  else if(h==="invoice-view")showSection("invoice-view");
+  else showSection("sales");
+}
+
+route();
+</script>
+</body>
+</html>

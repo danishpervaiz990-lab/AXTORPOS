@@ -1,146 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AXTOR POS Cloud - Dashboard</title>
-
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-    body{background:#f4f7f6;color:#1f2937}
-    .app{display:flex;min-height:100vh}
-    .sidebar{width:260px;background:#0f3d2e;color:#fff;padding:20px 14px;position:fixed;height:100vh;overflow-y:auto}
-    .brand{font-size:22px;font-weight:800;margin-bottom:25px;padding:8px 10px}
-    .brand span{color:#38d39f}
-    .menu a{display:block;color:#d1fae5;text-decoration:none;padding:12px 14px;border-radius:10px;margin-bottom:6px;font-size:15px}
-    .menu a:hover,.menu a.active{background:#145c43;color:#fff}
-    .main{margin-left:260px;width:calc(100% - 260px);padding:24px}
-    .topbar{background:#fff;border-radius:16px;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 6px 18px rgba(0,0,0,.06);margin-bottom:22px}
-    .topbar h1{font-size:26px;color:#0f3d2e}
-    .topbar p{color:#6b7280;margin-top:4px;font-size:14px}
-    .btn{border:none;border-radius:10px;padding:11px 16px;cursor:pointer;font-weight:700;font-size:14px}
-    .btn-primary{background:#0f9f6e;color:#fff}
-    .btn-dark{background:#0b1f33;color:#fff}
-    .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
-    .card{background:#fff;padding:20px;border-radius:16px;box-shadow:0 6px 18px rgba(0,0,0,.05)}
-    .card h3{font-size:14px;color:#6b7280;margin-bottom:10px}
-    .card .num{font-size:26px;font-weight:800;color:#0f3d2e}
-    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
-    .panel{background:#fff;border-radius:16px;box-shadow:0 6px 18px rgba(0,0,0,.06);padding:20px}
-    .panel h2{font-size:19px;color:#0f3d2e;margin-bottom:15px}
-    .quick{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    .quick a{text-decoration:none;background:#f0fdf4;color:#0f3d2e;padding:16px;border-radius:12px;font-weight:800;border:1px solid #d1fae5}
-    table{width:100%;border-collapse:collapse}
-    th{background:#f0fdf4;color:#0f3d2e;text-align:left;padding:12px;font-size:14px}
-    td{padding:12px;border-bottom:1px solid #eef2f7;font-size:14px}
-    @media(max-width:900px){
-      .sidebar{position:relative;width:100%;height:auto}
-      .app{flex-direction:column}
-      .main{margin-left:0;width:100%}
-      .cards{grid-template-columns:repeat(2,1fr)}
-      .grid{grid-template-columns:1fr}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXTOR POS Cloud - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--sidebar-bg:#1a2332;--sidebar-width:210px;--green:#2d7a3a;--green-light:#3a9e4a;--green-bright:#22c55e;--white:#fff;--bg:#f4f6f8;--border:#e2e8f0;--text:#1a202c;--muted:#64748b;--red:#ef4444;--orange:#f97316;--blue:#3b82f6;--font:'Inter',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);font-family:var(--font);font-size:14px;color:var(--text)}
+.sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);position:fixed;top:0;left:0;bottom:0;z-index:50;display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.logo-text{font-size:17px;font-weight:800;color:#fff}.logo-text span{color:var(--green-bright)}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px;margin-top:1px}
+.sidebar-nav{flex:1;padding:12px 10px}.nav-section{font-size:9px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1.5px;padding:14px 8px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;font-size:13px;color:rgba(255,255,255,.65);text-decoration:none;margin-bottom:1px;transition:.15s}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}.nav-item.active{background:var(--green);color:#fff;font-weight:600}
+.nav-icon{font-size:15px;width:18px;text-align:center}.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,.08)}
+.app-main{margin-left:var(--sidebar-width);min-height:100vh;display:flex;flex-direction:column}
+.topbar{height:56px;background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:40}
+.tb-search{flex:1;max-width:480px;position:relative}.tb-search input{width:100%;padding:9px 16px 9px 34px;border:1px solid var(--border);border-radius:8px;font-family:var(--font);font-size:13px;background:#f8fafc;outline:none}
+.tb-search span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.topbar-spacer{flex:1}.tb-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.company-btn{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px}.company-avatar{width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.company-name{font-size:13px;font-weight:600}.content{padding:24px;flex:1}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}.page-title{font-size:22px;font-weight:700}
+.header-actions{display:flex;gap:10px}.btn{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;border:none;text-decoration:none}
+.btn-outline{border:1px solid var(--border);background:#fff;color:var(--muted)}.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:var(--green-light)}
+.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px}
+.card-header{display:flex;justify-content:space-between;margin-bottom:12px}.card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.card-amount{font-size:24px;font-weight:800;margin-bottom:4px}.card-sub{font-size:12px;color:var(--muted)}
+.second-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.mini-table{width:100%;border-collapse:collapse}.mini-table th{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px;border-bottom:1px solid var(--border);text-align:left}
+.mini-table td{padding:10px 8px;font-size:12px;border-bottom:1px solid #f8fafc}
+.status-badge{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700}.paid{background:#f0fdf4;color:var(--green)}.pending{background:#fff7ed;color:var(--orange)}.overdue{background:#fef2f2;color:var(--red)}
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.quick-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;text-decoration:none;color:var(--text);transition:.15s}
+.quick-card:hover{border-color:var(--green-bright);transform:translateY(-1px)}.quick-icon{font-size:24px;margin-bottom:8px}.quick-title{font-weight:800}.quick-sub{font-size:12px;color:var(--muted);margin-top:4px}
+@media(max-width:900px){.sidebar{position:relative;width:100%;height:auto}.app-main{margin-left:0}.cards-grid,.second-row,.quick-grid{grid-template-columns:1fr}.topbar{padding:0 12px}.company-name{display:none}}
+</style>
 </head>
-
 <body>
-  <script>
-    if(localStorage.getItem("axtor_logged_in") !== "yes"){
-      window.location.href = "login.html";
-    }
-  </script>
+<script>
+if(localStorage.getItem("axtor_logged_in") !== "yes"){
+  window.location.href = "login.html";
+}
+</script>
 
-  <div class="app">
-    <aside class="sidebar">
-      <div class="brand">AXTOR <span>POS</span></div>
-      <nav class="menu">
-        <a href="index.html" class="active">Dashboard</a>
-        <a href="sales.html">Sales</a>
-        <a href="new-sale.html">New Sale</a>
-        <a href="payment.html">Payment</a>
-        <a href="saved-invoices.html">Saved Invoices</a>
-        <a href="returns.html">Returns</a>
-        <a href="invoice.html">Invoice</a>
-        <a href="customers.html">Customers</a>
-        <a href="add-customer.html">Add Customer</a>
-        <a href="products.html">Products</a>
-        <a href="add-product.html">Add Product</a>
-      </nav>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div>
-          <h1>Dashboard</h1>
-          <p>Welcome to AXTOR POS Cloud</p>
-        </div>
-        <button class="btn btn-dark" onclick="logout()">Logout</button>
-      </div>
-
-      <section class="cards">
-        <div class="card"><h3>Total Sales</h3><div class="num">QAR 0</div></div>
-        <div class="card"><h3>Total Invoices</h3><div class="num">0</div></div>
-        <div class="card"><h3>Products</h3><div class="num" id="productCount">0</div></div>
-        <div class="card"><h3>Customers</h3><div class="num" id="customerCount">0</div></div>
-      </section>
-
-      <section class="grid">
-        <div class="panel">
-          <h2>Recent Activity</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Activity</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Today</td>
-                <td>Dashboard loaded successfully</td>
-                <td>Active</td>
-              </tr>
-              <tr>
-                <td>Today</td>
-                <td>Products module connected</td>
-                <td>Ready</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="panel">
-          <h2>Quick Actions</h2>
-          <div class="quick">
-            <a href="new-sale.html">+ New Sale</a>
-            <a href="products.html">Products</a>
-            <a href="add-product.html">+ Add Product</a>
-            <a href="customers.html">Customers</a>
-            <a href="returns.html">Returns</a>
-            <a href="invoice.html">Invoice</a>
-          </div>
-        </div>
-      </section>
-    </main>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">AXTOR<span>POS</span></div>
+    <div class="logo-sub">CLOUD</div>
   </div>
 
-  <script>
-    function logout(){
-      localStorage.removeItem("axtor_logged_in");
-      window.location.href = "login.html";
-    }
+  <nav class="sidebar-nav">
+    <a class="nav-item active" href="index.html"><span class="nav-icon">⊞</span> Dashboard</a>
 
-    function getProducts(){
-      return JSON.parse(localStorage.getItem("axtor_products")) || [];
-    }
+    <div class="nav-section">Sales</div>
+    <a class="nav-item" href="sales.html"><span class="nav-icon">🛒</span> Sales</a>
+    <a class="nav-item" href="sales.html#new-sale"><span class="nav-icon">➕</span> New Sale</a>
+    <a class="nav-item" href="sales.html#saved-invoices"><span class="nav-icon">📄</span> Invoices</a>
+    <a class="nav-item" href="sales.html#returns"><span class="nav-icon">↩️</span> Returns</a>
 
-    function getCustomers(){
-      return JSON.parse(localStorage.getItem("customers")) || [];
-    }
+    <div class="nav-section">Customers</div>
+    <a class="nav-item" href="customers.html"><span class="nav-icon">👥</span> Customers</a>
+    <a class="nav-item" href="customers.html#add-customer"><span class="nav-icon">➕</span> Add Customer</a>
 
-    document.getElementById("productCount").textContent = getProducts().length;
-    document.getElementById("customerCount").textContent = getCustomers().length;
-  </script>
+    <div class="nav-section">Products</div>
+    <a class="nav-item" href="products.html"><span class="nav-icon">🛍️</span> Products</a>
+    <a class="nav-item" href="products.html#add-product"><span class="nav-icon">📦</span> Add Product</a>
+
+    <div class="nav-section">System</div>
+    <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a class="nav-item" href="#" onclick="logout()"><span class="nav-icon">🚪</span> Logout</a>
+  </div>
+</aside>
+
+<main class="app-main">
+  <div class="topbar">
+    <div>☰</div>
+    <div class="tb-search"><span>🔍</span><input placeholder="Search..."></div>
+    <div class="topbar-spacer"></div>
+    <div class="tb-icon">❓</div>
+    <div class="tb-icon">🔔</div>
+    <div class="tb-icon">⚙️</div>
+    <div class="company-btn">
+      <div class="company-avatar">AX</div>
+      <div class="company-name">AXTOR Trading</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <div class="page-title">Dashboard</div>
+      <div class="header-actions">
+        <button class="btn btn-outline">This Month ▾</button>
+        <a class="btn btn-green" href="sales.html#new-sale">+ New Sale</a>
+      </div>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Total Sales</span><span>Today</span></div>
+        <div class="card-amount">QAR 0.00</div>
+        <div class="card-sub">Sales will update after billing</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Invoices</span><span>This Month</span></div>
+        <div class="card-amount">0</div>
+        <div class="card-sub">Saved invoices and paid bills</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Products</span><span>Stock</span></div>
+        <div class="card-amount" id="productCount">0</div>
+        <div class="card-sub">Active product records</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Customers</span><span>Total</span></div>
+        <div class="card-amount" id="customerCount">0</div>
+        <div class="card-sub">Customer database</div>
+      </div>
+    </div>
+
+    <div class="second-row">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Recent Invoices</span></div>
+        <table class="mini-table">
+          <thead>
+            <tr><th>Invoice</th><th>Customer</th><th>Amount</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>INV-1001</td><td>Walk-in Customer</td><td>QAR 0.00</td><td><span class="status-badge paid">Paid</span></td></tr>
+            <tr><td>INV-1002</td><td>Cash Customer</td><td>QAR 0.00</td><td><span class="status-badge pending">Draft</span></td></tr>
+            <tr><td>INV-1003</td><td>Credit Customer</td><td>QAR 0.00</td><td><span class="status-badge overdue">Due</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Quick Actions</span></div>
+        <div class="quick-grid">
+          <a class="quick-card" href="sales.html#new-sale"><div class="quick-icon">🛒</div><div class="quick-title">New Sale</div><div class="quick-sub">Create bill</div></a>
+          <a class="quick-card" href="products.html#add-product"><div class="quick-icon">📦</div><div class="quick-title">Add Product</div><div class="quick-sub">Stock item</div></a>
+          <a class="quick-card" href="customers.html#add-customer"><div class="quick-icon">👥</div><div class="quick-title">Add Customer</div><div class="quick-sub">Customer profile</div></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+function logout(){
+  localStorage.removeItem("axtor_logged_in");
+  window.location.href = "login.html";
+}
+
+function getCount(key){
+  try{
+    return JSON.parse(localStorage.getItem(key) || "[]").length;
+  }catch(e){
+    return 0;
+  }
+}
+
+document.getElementById("productCount").textContent = getCount("axtor_products");
+document.getElementById("customerCount").textContent = getCount("customers");
+</script>
 </body>
 </html>
